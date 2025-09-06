@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { useForm } from 'react-hook-form';
 import { PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import Image from 'next/image';
 
 interface UploadCardProps {
   onSubmitReview: (email: string) => Promise<void>;
@@ -128,11 +129,12 @@ export default function UploadCard({ onSubmitReview }: UploadCardProps) {
           
           {preview ? (
             <div className="relative group">
-              <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden">
-                <img
+              <div className="relative aspect-[4/3] w-full rounded-xl overflow-hidden bg-black/20">
+                <Image
                   src={preview}
                   alt="Review preview"
-                  className="w-full h-full object-contain bg-black/20"
+                  fill
+                  className="object-contain"
                 />
               </div>
               <button

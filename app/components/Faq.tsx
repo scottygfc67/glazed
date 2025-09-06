@@ -12,8 +12,8 @@ const faqs = [
         <ol className="list-decimal pl-5 space-y-1">
           <li>Open the TikTok app and go to your profile</li>
           <li>Tap the menu (three dots) in the top-right corner</li>
-          <li>Select "Orders"</li>
-          <li>Find your GLAZED order and tap "Write a review"</li>
+          <li>Select &quot;Orders&quot;</li>
+          <li>Find your GLAZED order and tap &quot;Write a review&quot;</li>
           <li>After submitting, take a screenshot of your 5-star review</li>
         </ol>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { StarIcon, XMarkIcon, PhotoIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 
 // Animated Honey Drip Component
 const HoneyDrip = () => (
@@ -10,13 +11,6 @@ const HoneyDrip = () => (
       <div className="absolute -top-10 left-1/2 w-40 h-40 bg-gradient-to-b from-yellow-400 to-amber-500 rounded-b-full transform -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute top-0 left-1/2 w-32 h-32 bg-yellow-300 rounded-b-full transform -translate-x-1/2 -translate-y-1/2"></div>
     </div>
-  </div>
-);
-
-// Sparkle Component
-const Sparkle = () => (
-  <div className="absolute animate-spin-slow">
-    <div className="w-1 h-1 bg-yellow-200 rounded-full"></div>
   </div>
 );
 
@@ -176,11 +170,15 @@ export default function GlazedReviewPage() {
               </label>
               {preview ? (
                 <div className="relative group">
-                  <img 
-                    src={preview} 
-                    alt="Review preview" 
-                    className="w-full h-48 object-cover rounded-xl border-2 border-pink-200"
-                  />
+                  <div className="relative w-48 h-48 mx-auto mb-6">
+                    <Image 
+                      src="/glazed-bottle.png" 
+                      alt="Glazed Hair Drizzle" 
+                      fill
+                      className="object-contain"
+                      priority
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() => {

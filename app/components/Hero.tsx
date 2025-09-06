@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 export default function Hero() {
   return (
     <section className="honey-card relative overflow-hidden mb-12">
