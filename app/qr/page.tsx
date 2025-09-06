@@ -1,327 +1,391 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { StarIcon, XMarkIcon, PhotoIcon, ArrowPathIcon, CheckCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import CountdownTimer from '../../components/CountdownTimer';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  CheckCircleIcon,
+  PhotoIcon,
+  XMarkIcon,
+  SparklesIcon,
+  ArrowPathIcon,
+} from '@heroicons/react/24/solid';
 
-// Function to generate a random coupon code
+/* -------------------------------------------
+   Brand helpers
+-------------------------------------------- */
+
+// Brand baby blue + honey gold
+const BABY_BLUE = '#77C9F1';
+const HONEY = '#F4B000';
+const HOT_PINK = '#FF2F7B';
+
+// Generate promo
 const generateCouponCode = () => {
   const prefix = 'GLAZED-40-';
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let result = '';
-  for (let i = 0; i < 6; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
+  for (let i = 0; i < 6; i++) result += chars[Math.floor(Math.random() * chars.length)];
   return prefix + result;
 };
 
-// HoneyDripBorder component for the top decoration
-const HoneyDripBorder = () => (
-  <div className="absolute top-0 left-0 right-0 h-12 overflow-hidden">
-    <div className="absolute -top-10 w-full h-20 bg-amber-400 rounded-b-full"></div>
-    <div className="absolute -top-5 left-1/4 w-12 h-12 bg-amber-400 rounded-full"></div>
-    <div className="absolute -top-3 left-1/2 w-8 h-8 bg-amber-400 rounded-full"></div>
-    <div className="absolute -top-6 right-1/4 w-10 h-10 bg-amber-400 rounded-full"></div>
+// Simple 6‑hour countdown (adjust via initialSeconds)
+function useCountdown(initialSeconds = 6 * 60 * 60) {
+  const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
+  useEffect(() => {
+    const id = setInterval(() => setSecondsLeft(s => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const hh = String(Math.floor(secondsLeft / 3600)).padStart(2, '0');
+  const mm = String(Math.floor((secondsLeft % 3600) / 60)).padStart(2, '0');
+  const ss = String(secondsLeft % 60).padStart(2, '0');
+  return { hh, mm, ss, secondsLeft };
+}
+
+/* -------------------------------------------
+   Honey Drip SVG (repeats horizontally)
+-------------------------------------------- */
+const HoneyDrip = () => (
+  <div className="relative w-full h-20 overflow-hidden">
+    <svg
+      className="absolute inset-0 w-[200%] h-full animate-[drip_18s_linear_infinite]"
+      viewBox="0 0 1600 160"
+      preserveAspectRatio="none"
+      style={{ filter: 'drop-shadow(0 4px 0 rgba(0,0,0,.15))' }}
+    >
+      <defs>
+        <linearGradient id="honey" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFC839" />
+          <stop offset="60%" stopColor={HONEY} />
+          <stop offset="100%" stopColor="#D59400" />
+        </linearGradient>
+      </defs>
+      <path
+        fill="url(#honey)"
+        d="M0,0 H1600 V95
+           C1500,120 1480,160 1400,160
+           C1320,160 1310,120 1210,95
+           C1100,65 1080,155 1000,155
+           C920,155 900,90 800,90
+           C700,90 700,160 610,160
+           C520,160 520,110 420,95
+           C320,80 310,145 220,150
+           C130,155 120,110 0,95 Z"
+      />
+    </svg>
   </div>
 );
 
-// Floating donut decoration
-const FloatingDonut = ({ top, left, size, rotation, delay }: { top: string; left: string; size: string; rotation: number; delay: number }) => (
-  <div 
-    className="absolute z-0 pointer-events-none"
+/* -------------------------------------------
+   Sparkle field (tiny twinkles)
+-------------------------------------------- */
+const Sparkles = () => (
+  <div
+    aria-hidden
+    className="pointer-events-none absolute inset-0"
     style={{
-      top,
-      left,
-      width: size,
-      height: size,
-      animation: `float 6s ease-in-out ${delay}s infinite`,
-      transform: `rotate(${rotation}deg)`
+      backgroundImage:
+        'radial-gradient(white 1px, rgba(255,255,255,0) 1.5px)',
+      backgroundSize: '24px 24px',
+      opacity: 0.35,
+      maskImage:
+        'linear-gradient(to bottom, rgba(0,0,0,.15), rgba(0,0,0,1))',
     }}
-  >
-    <div className="w-full h-full rounded-full bg-pink-300 border-4 border-pink-400 flex items-center justify-center">
-      <div className="w-3/4 h-3/4 rounded-full bg-amber-200 border-2 border-amber-300"></div>
-    </div>
-  </div>
+  />
 );
 
+/* -------------------------------------------
+   Page
+-------------------------------------------- */
 export default function QRLandingPage() {
-  const [couponCode, setCouponCode] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [preview, setPreview] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [coupon, setCoupon] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const { hh, mm, ss } = useCountdown();
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const canSubmit = Boolean(email && preview && !submitting);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setIsSubmitting(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      const code = generateCouponCode();
-      setCouponCode(code);
-      
-      // Scroll to coupon after state updates
-      setTimeout(() => {
-        const element = document.getElementById('coupon-section');
-        if (element) element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => setPreview(String(r.result));
+    r.readAsDataURL(file);
   };
 
-  const handleRemoveImage = () => {
-    setPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    setSubmitting(true);
+    await new Promise(r => setTimeout(r, 1200)); // simulate
+    const code = generateCouponCode();
+    setCoupon(code);
+    setSubmitting(false);
+
+    // smooth scroll
+    setTimeout(() => {
+      document.getElementById('coupon')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 50);
   };
 
-  // Add floating donuts
-  const donuts = [
-    { top: '10%', left: '5%', size: '60px', rotation: 15, delay: 0 },
-    { top: '15%', left: '85%', size: '40px', rotation: -10, delay: 0.5 },
-    { top: '60%', left: '90%', size: '50px', rotation: 20, delay: 1 },
-    { top: '70%', left: '5%', size: '45px', rotation: -15, delay: 1.5 },
-  ];
+  const bg = useMemo(
+    () =>
+      `radial-gradient(80rem 60rem at 10% -10%, rgba(255,255,255,.6), rgba(255,255,255,0)),
+       radial-gradient(60rem 50rem at 110% 10%, rgba(255,255,255,.5), rgba(255,255,255,0))`,
+    []
+  );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-50 text-gray-900 overflow-x-hidden">
-      {/* Background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        {donuts.map((donut, i) => (
-          <FloatingDonut key={i} {...donut} />
-        ))}
-        <div className="absolute top-1/4 right-1/4 w-32 h-32 bg-pink-200 rounded-full mix-blend-multiply opacity-20 animate-blob"></div>
-        <div className="absolute top-1/3 left-1/4 w-40 h-40 bg-amber-200 rounded-full mix-blend-multiply opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-1/4 left-1/2 w-48 h-48 bg-blue-200 rounded-full mix-blend-multiply opacity-20 animate-blob animation-delay-4000"></div>
+    <main
+      className="min-h-[100dvh] w-full text-slate-900 overflow-x-hidden"
+      style={{ background: `${bg}, ${BABY_BLUE}` }}
+    >
+      {/* Sky / header drip */}
+      <div className="relative">
+        <HoneyDrip />
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 py-16">
-        {/* Honey Drip Border */}
-        <div className="relative bg-gradient-to-r from-blue-400 to-blue-500 rounded-t-3xl pt-12 pb-8 px-6 mb-8 overflow-hidden">
-          <HoneyDripBorder />
-          <div className="relative z-10 text-center">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-3">THANK YOU, GLAZED GODDESS! ✨</h1>
-            <p className="text-blue-100 text-lg md:text-xl">Drop your 5-star drip &amp; unlock your reward</p>
-          </div>
-        </div>
+      {/* Hero */}
+      <section className="relative max-w-5xl mx-auto px-6 pt-8">
+        <Sparkles />
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/60 overflow-hidden"
+        >
+          {/* floating honey glows */}
+          <div className="pointer-events-none absolute -top-16 -left-10 w-56 h-56 rounded-full bg-amber-300/70 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -right-10 w-72 h-72 rounded-full bg-pink-300/60 blur-3xl" />
 
-        {/* Countdown Timer in a honey bubble */}
-        <div className="bg-amber-100 border-4 border-amber-300 rounded-full w-48 h-48 mx-auto mb-10 flex items-center justify-center relative">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-300 to-amber-400 opacity-30 animate-pulse"></div>
-          <div className="relative z-10 text-center">
-            <p className="text-amber-800 text-sm font-medium mb-1">SPECIAL GLAZE CODE EXPIRES IN</p>
-            <div className="text-2xl font-bold text-amber-900">
-              {isClient && <CountdownTimer initialMinutes={5} />}
+          <div className="relative p-6 sm:p-10">
+            <motion.h1
+              initial={{ y: 12, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.05 }}
+              className="text-center font-black tracking-tight"
+              style={{ fontSize: 'clamp(1.8rem, 3vw, 2.6rem)', color: '#0b3b60' }}
+            >
+              Welcome to the club! - Unlock **40% OFF**
+            </motion.h1>
+
+            <p className="text-center mt-2 text-slate-700">
+              Leave a <span className="font-bold">5★ TikTok Shop review</span>, upload a screenshot,
+              and we’ll send you a <span className="font-extrabold">40% coupon</span>.
+            </p>
+
+            {/* countdown + badge */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <span className="inline-flex items-center rounded-full bg-white border border-amber-200 px-4 py-2 text-sm font-semibold text-amber-800 shadow-sm">
+                Offer ends in&nbsp;
+                <span className="tabular-nums font-black">
+                  {hh}:{mm}:{ss}
+                </span>
+              </span>
+              <span className="inline-flex items-center rounded-full bg-gradient-to-r from-amber-400 to-pink-500 text-white px-4 py-2 text-sm font-bold shadow-md">
+                40% Off Code
+              </span>
             </div>
-          </div>
-          <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-amber-200 rounded-full blur-md opacity-70"></div>
-        </div>
 
-        {!couponCode ? (
-          // Review Form
-          <div className="bg-white/90 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden border-2 border-amber-200 relative">
-            {/* Glossy overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent pointer-events-none"></div>
-            
-            <div className="p-6 sm:p-8 relative z-10">
-              {/* Star Rating */}
-              <div className="flex justify-center space-x-1 mb-6">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-b from-amber-300 to-amber-500 rounded-full transform rotate-12 scale-110"></div>
-                    <StarIcon className="h-10 w-10 text-amber-400 relative z-10 drop-shadow-lg" />
-                  </div>
-                ))}
-              </div>
+            {/* form + preview */}
+            <div className="mt-10 grid md:grid-cols-2 gap-8">
+              {/* Left: Instructions */}
+              <motion.div
+                initial={{ x: -12, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5 }}
+                className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5"
+              >
+                <h3 className="font-extrabold text-amber-900 mb-3">How to Claim</h3>
+                <ol className="list-decimal pl-5 space-y-2 text-amber-900/90">
+                  <li>Open TikTok &gt; Profile &gt; Orders.</li>
+                  <li>Find your <span className="font-semibold">GLAZED</span> order &gt; Write a Review.</li>
+                  <li>Rate <b>5★</b> and post a few words.</li>
+                  <li>Screenshot your posted review (show stars + username).</li>
+                  <li>Upload below and grab your code.</li>
+                </ol>
+              </motion.div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Email Input */}
+              {/* Right: Form */}
+              <motion.form
+                onSubmit={onSubmit}
+                initial={{ x: 12, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.05 }}
+                className="space-y-5"
+              >
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-2 ml-1">
-                    Where should we drizzle your code?
+                  <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    Where should we send your code?
                   </label>
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-amber-100 to-pink-100 rounded-xl transform -rotate-1"></div>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="relative w-full px-5 py-4 bg-white/80 backdrop-blur-sm rounded-xl border-2 border-amber-200 focus:ring-2 focus:ring-amber-400 focus:border-transparent text-gray-800 placeholder-amber-400 font-medium"
-                      placeholder="your@glow.com"
-                    />
-                  </div>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@glow.com"
+                    className="w-full rounded-2xl border-2 border-amber-200 bg-white/80 px-5 py-4 outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-300"
+                  />
                 </div>
 
-                {/* Review Upload */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 ml-1">
-                    Upload Your 5-Star Review
+                  <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    Upload your 5★ review screenshot
                   </label>
-                  {preview ? (
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-pink-200 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform"></div>
-                      <div className="relative bg-white rounded-xl overflow-hidden border-2 border-amber-300">
-                        <div className="relative w-full h-48 bg-gray-50">
-                          <Image 
+
+                  {/* Upload / Preview */}
+                  <AnimatePresence mode="wait">
+                    {preview ? (
+                      <motion.div
+                        key="preview"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        className="relative"
+                      >
+                        <div className="relative h-60 w-full overflow-hidden rounded-2xl border-2 border-amber-300 bg-white">
+                          <Image
                             src={preview}
-                            alt="Review preview"
+                            alt="Review screenshot"
                             fill
                             className="object-contain"
+                            priority
                           />
                         </div>
                         <button
                           type="button"
-                          onClick={handleRemoveImage}
-                          className="absolute top-2 right-2 bg-amber-500 hover:bg-amber-600 rounded-full p-1.5 transition-colors shadow-md"
+                          onClick={() => {
+                            setPreview(null);
+                            if (fileRef.current) fileRef.current.value = '';
+                          }}
+                          className="absolute -top-3 -right-3 inline-flex items-center justify-center rounded-full bg-amber-500 p-2 text-white shadow-lg hover:bg-amber-600"
+                          aria-label="Remove image"
                         >
-                          <XMarkIcon className="h-4 w-4 text-white" />
+                          <XMarkIcon className="h-5 w-5" />
                         </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div 
-                      className="relative group cursor-pointer"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-pink-200 rounded-2xl transform rotate-1 group-hover:rotate-0 transition-transform"></div>
-                      <div className="relative bg-gradient-to-br from-amber-50 to-pink-50 border-2 border-dashed border-amber-300 rounded-2xl p-8 text-center transition-all group-hover:bg-opacity-90">
-                        <div className="bg-amber-100 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                          <PhotoIcon className="h-8 w-8 text-amber-500" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="drop"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        className="relative group"
+                      >
+                        <div
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => fileRef.current?.click()}
+                          onKeyDown={(e) => (e.key === 'Enter' ? fileRef.current?.click() : null)}
+                          className="flex h-60 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-amber-300 bg-gradient-to-br from-white/70 to-amber-50/70 text-center transition hover:bg-white"
+                        >
+                          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 shadow-sm group-hover:scale-105 transition">
+                            <PhotoIcon className="h-8 w-8 text-amber-500" />
+                          </div>
+                          <p className="font-semibold text-slate-800">Click to upload</p>
+                          <p className="text-xs text-slate-600">
+                            JPG/PNG/WebP • Max 5MB • Show stars + username
+                          </p>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-white">
+                            <SparklesIcon className="h-4 w-4" />
+                            Upload Screenshot
+                          </span>
                         </div>
-                        <p className="text-sm text-amber-800 font-medium mb-3">Screenshot of your 5★ review</p>
-                        <div className="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-amber-400 to-pink-400 text-white font-bold rounded-full text-sm shadow-lg hover:shadow-amber-200/50 transition-all group-hover:scale-105">
-                          <SparklesIcon className="h-4 w-4 mr-1.5" />
-                          Upload Screenshot
-                        </div>
-                        <p className="text-xs text-amber-600 mt-3">Show your 5★ review with username and product title</p>
                         <input
-                          ref={fileInputRef}
+                          ref={fileRef}
                           type="file"
                           accept="image/*"
-                          onChange={handleFileChange}
+                          onChange={handleFile}
                           className="hidden"
-                          required
+                          aria-hidden="true"
                         />
-                      </div>
-                    </div>
-                  )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !preview}
-                  className={`w-full py-5 px-6 rounded-2xl font-extrabold text-lg tracking-wide relative overflow-hidden group ${
-                    isSubmitting || !preview 
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-amber-500 to-pink-500 text-white hover:shadow-xl hover:shadow-amber-200/50 transform hover:-translate-y-0.5 transition-all'
-                  }`}
+                  disabled={!canSubmit}
+                  className={`group relative w-full overflow-hidden rounded-2xl px-6 py-4 text-lg font-extrabold tracking-wide text-white shadow-lg transition
+                    ${canSubmit ? 'bg-gradient-to-r from-amber-500 to-pink-500 hover:shadow-amber-200/60' : 'bg-slate-300 cursor-not-allowed'}`}
                 >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center">
-                      <ArrowPathIcon className="h-5 w-5 animate-spin mr-2" />
-                      <span>Glazing Your Code...</span>
-                    </div>
+                  {submitting ? (
+                    <span className="inline-flex items-center">
+                      <ArrowPathIcon className="mr-2 h-5 w-5 animate-spin" />
+                      Glazing your code…
+                    </span>
                   ) : (
                     <>
-                      <span className="relative z-10">CLAIM MY 40% OFF GLASSY CODE</span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <span className="relative z-10">CLAIM MY 40% OFF CODE</span>
+                      {canSubmit && (
+                        <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/20 to-white/0 transition-transform duration-700 group-hover:translate-x-full" />
+                      )}
                     </>
                   )}
                 </button>
-              </form>
+              </motion.form>
             </div>
-          </div>
-        ) : (
-          // Coupon Display
-          <div id="coupon-section" className="text-center">
-            <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 p-8 rounded-3xl shadow-2xl overflow-hidden">
-              {/* Honey drip effect */}
-              <div className="absolute -top-20 -left-10 w-40 h-40 bg-amber-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
-              <div className="absolute -bottom-20 -right-10 w-60 h-60 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-50"></div>
-              
-              <div className="relative z-10">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
-                  <CheckCircleIcon className="h-12 w-12 text-white" />
-                </div>
-                <h2 className="text-3xl font-extrabold text-white mb-3">Your 40% Off Code Is Ready! 🎉</h2>
-                <p className="text-blue-100 text-lg mb-6">Use this code at checkout to save on your next bottle</p>
-                
-                <div className="bg-white/20 backdrop-blur-sm p-5 rounded-2xl mb-6 border-2 border-white/20 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -rotate-2 scale-105"></div>
-                  <div className="relative">
-                    <div className="text-sm font-semibold text-blue-100 mb-1 tracking-wider">YOUR PROMO CODE</div>
-                    <div className="text-4xl font-black font-mono tracking-wider text-white bg-gradient-to-r from-amber-300 to-white bg-clip-text text-transparent">
-                      {couponCode}
+
+            {/* Coupon reveal */}
+            <AnimatePresence>
+              {coupon && (
+                <motion.div
+                  id="coupon"
+                  initial={{ opacity: 0, y: 20, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.45 }}
+                  className="mt-10 rounded-3xl border border-white/70 bg-white/70 p-6 text-center backdrop-blur-xl"
+                >
+                  <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100">
+                    <CheckCircleIcon className="h-10 w-10 text-amber-600" />
+                  </div>
+                  <h3 className="text-2xl font-black text-amber-900">
+                    Your 40% Off Code Is Ready!
+                  </h3>
+                  <p className="mt-1 text-slate-700">Use this code at checkout:</p>
+
+                  <div className="mx-auto mt-4 max-w-md rounded-2xl border-2 border-amber-300 bg-amber-50 p-4">
+                    <div className="text-xs font-semibold text-amber-700">PROMO CODE</div>
+                    <div className="font-mono text-3xl font-black tracking-widest text-amber-900">
+                      {coupon}
                     </div>
                   </div>
-                </div>
-                
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(couponCode);
-                    // Could add a toast notification here
-                  }}
-                  className="bg-white text-blue-600 px-8 py-3.5 rounded-xl font-extrabold hover:bg-opacity-90 transition-all transform hover:scale-105 shadow-lg hover:shadow-blue-200/50 flex items-center mx-auto"
-                >
-                  <span className="mr-2">Copy Code</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                  </svg>
-                </button>
-                
-                <p className="text-sm text-blue-100 mt-4">Code valid for 30 days. One use per customer.</p>
-              </div>
-            </div>
-            
-            <div className="mt-8 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg border-2 border-amber-100">
-              <h3 className="font-extrabold text-xl text-gray-800 mb-4 flex items-center justify-center">
-                <span className="bg-gradient-to-r from-amber-400 to-pink-400 bg-clip-text text-transparent">How to Use Your Code</span>
-              </h3>
-              <ol className="space-y-4 text-left">
-                <li className="flex items-start">
-                  <span className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-amber-500 text-white font-bold text-sm mr-3 mt-0.5">1</span>
-                  <span className="text-gray-700">Add items to your cart at checkout</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0">2</span>
-                  <span>Paste your code at checkout</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="bg-amber-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 flex-shrink-0">3</span>
-                  <span>Enjoy your 40% discount!</span>
-                </li>
-              </ol>
-            </div>
+
+                  <button
+                    onClick={() => navigator.clipboard.writeText(coupon)}
+                    className="mt-5 rounded-xl bg-amber-600 px-5 py-2.5 font-bold text-white hover:bg-amber-700"
+                  >
+                    Copy Code
+                  </button>
+
+                  <p className="mt-3 text-xs text-slate-600">
+                    Valid 30 days • One use per customer
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-        )}
+        </motion.div>
 
         {/* Footer */}
-        <div className="mt-12 text-center text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} GLAZED. All rights reserved.</p>
-          <p className="mt-1">This offer is valid for a limited time only.</p>
-        </div>
-      </div>
+        <p className="mt-10 pb-8 text-center text-xs text-slate-700">
+          © {new Date().getFullYear()} GLAZED — Glaze Today. Glow Tomorrow.
+        </p>
+      </section>
+
+      {/* keyframes */}
+      <style jsx global>{`
+        @keyframes drip {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
     </main>
   );
 }
