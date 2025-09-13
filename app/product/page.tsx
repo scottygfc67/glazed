@@ -183,39 +183,32 @@ export default function ProductPage() {
       <IngredientTransparency />
 
       {/* Final CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 relative overflow-hidden">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <section className="py-20 bg-glazed-blue">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-            Your Glazed Era Starts Now
+            Ready to Transform Your Hair?
           </h2>
           <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of hair-obsessed customers who can't stop talking about GLAZED
+            Join thousands of satisfied customers who have discovered the magic of GLAZED hair colors.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               onClick={handleAddToCart}
-              className="bg-white text-gray-800 px-12 py-4 rounded-full font-bold text-xl hover:scale-105 transition-all duration-300 shadow-2xl"
+              className="bg-white text-glazed-blue px-12 py-4 rounded-lg font-bold text-xl hover:bg-gray-100 transition-all duration-300 shadow-lg"
             >
               Add to Cart – ${selectedVariant?.price?.amount || '29.99'}
             </button>
             <div className="flex items-center space-x-6 text-white/80">
               <div className="flex items-center space-x-2">
-                <span>💖</span>
-                <span className="text-sm">Ships in 24h</span>
+                <span>🚚</span>
+                <span className="text-sm">Free Shipping</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>🔒</span>
-                <span className="text-sm">Money-Back Guarantee</span>
+                <span className="text-sm">30-Day Guarantee</span>
               </div>
             </div>
           </div>
-        </div>
-        
-        {/* Background Elements */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-40 h-40 bg-white/10 rounded-full blur-xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-white/5 rounded-full blur-3xl"></div>
         </div>
       </section>
 

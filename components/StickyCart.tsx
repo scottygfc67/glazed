@@ -89,18 +89,9 @@ export default function StickyCart({ product, selectedVariant, quantity, onAddTo
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              className="relative bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-6 py-3 rounded-full font-bold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl group overflow-hidden"
+              className="bg-glazed-blue text-white px-6 py-3 rounded-full font-bold hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
             >
-              <span className="relative z-10 flex items-center space-x-2">
-                <span>Add to Cart</span>
-                {showDrip && (
-                  <div className="text-2xl animate-bounce">
-                    💧
-                  </div>
-                )}
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+              Add to Cart
             </button>
           </div>
         </div>
