@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { getProduct, createCheckoutUrl, formatPrice } from '@/lib/shopify';
+import { getProduct, createCheckoutUrl } from '@/lib/shopify';
 import ProductHero from '@/components/ProductHero';
 import SocialProof from '@/components/SocialProof';
 import IngredientsScience from '@/components/IngredientsScience';
@@ -19,7 +18,6 @@ export default function ProductPage() {
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -129,16 +127,7 @@ export default function ProductPage() {
     );
   }
 
-  const images = product.images?.edges?.map((edge: any) => edge.node) || [];
-  const variants = product.variants?.edges?.map((edge: any) => edge.node) || [];
-  const availableVariants = variants.filter((variant: any) => variant.availableForSale);
-
-  const handleVariantChange = (variantId: string) => {
-    const variant = variants.find((v: any) => v.id === variantId);
-    if (variant) {
-      setSelectedVariant(variant);
-    }
-  };
+  // Product data is handled by the ProductHero component
 
   const handleAddToCart = () => {
     if (selectedVariant) {

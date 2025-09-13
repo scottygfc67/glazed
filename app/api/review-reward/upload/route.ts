@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
     const uploadsDir = join(process.cwd(), 'public', 'uploads');
     try {
       await writeFile(filepath, buffer);
-    } catch (error) {
+    } catch {
       // Directory doesn't exist, create it
-      const fs = require('fs');
+      const fs = await import('fs');
       fs.mkdirSync(uploadsDir, { recursive: true });
       await writeFile(filepath, buffer);
     }
