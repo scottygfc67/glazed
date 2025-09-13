@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       code,
       status: 'APPROVED',
       createdAt: new Date().toISOString(),
-      ipHash: request.ip || 'unknown',
+      ipHash: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       userAgent: request.headers.get('user-agent'),
       source: request.headers.get('referer')
     };
