@@ -13,7 +13,6 @@ interface StickyCartProps {
 
 export default function StickyCart({ product, selectedVariant, quantity, onAddToCart, onQuantityChange }: StickyCartProps) {
   const [isVisible, setIsVisible] = useState(false);
-  const [showDrip, setShowDrip] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,8 +26,6 @@ export default function StickyCart({ product, selectedVariant, quantity, onAddTo
 
   const handleAddToCart = () => {
     onAddToCart();
-    setShowDrip(true);
-    setTimeout(() => setShowDrip(false), 2000);
   };
 
   if (!isVisible) return null;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import QRHero from '@/components/qr/QRHero';
 import StepHeader from '@/components/qr/StepHeader';
@@ -10,7 +10,7 @@ import StepThree from '@/components/qr/StepThree';
 import FAQ from '@/components/qr/FAQ';
 import TrustBand from '@/components/qr/TrustBand';
 
-export default function QRPage() {
+function QRPageContent() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -22,6 +22,13 @@ export default function QRPage() {
   });
   const [generatedCode, setGeneratedCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const steps = [
+    { number: 1, title: 'Review', completed: currentStep > 1 },
+    { number: 2, title: 'Upload', completed: currentStep > 2 },
+    { number: 3, title: 'Get Code', completed: currentStep > 3 }
+  ];
 
   const handleNextStep = () => {
     if (currentStep < 3) {
@@ -62,44 +69,43 @@ export default function QRPage() {
       } else {
         setError(result.error || 'Something went wrong');
       }
-    } catch (err) {
+    } catch {
       setError('Network error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string | File | null) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-pink-50 to-yellow-50">
       <QRHero />
       
       <main className="mx-auto max-w-md px-4 pb-28">
-        <StepHeader currentStep={currentStep} />
+        <StepHeader steps={steps} currentStep={currentStep} />
         
         {currentStep === 1 && (
-          <StepOne onNext={handleNextStep} />
+          <StepOne 
+            onNext={handleNextStep} 
+            formData={formData} 
+            setFormData={(data) => setFormData(data)} 
+          />
         )}
         
         {currentStep === 2 && (
           <StepTwo
             formData={formData}
-            onInputChange={handleInputChange}
-            onNext={handleNextStep}
+            setFormData={(data) => setFormData(data)}
             onPrev={handlePrevStep}
+            onSubmit={handleFormSubmit}
+            isLoading={isLoading}
+            error={error}
           />
         )}
         
         {currentStep === 3 && (
           <StepThree
-            code={generatedCode}
-            onPrev={handlePrevStep}
+            generatedCode={generatedCode}
           />
         )}
         
@@ -119,5 +125,13 @@ export default function QRPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function QRPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <QRPageContent />
+    </Suspense>
   );
 }

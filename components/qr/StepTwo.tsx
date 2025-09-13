@@ -12,7 +12,6 @@ interface FormData {
 }
 
 interface StepTwoProps {
-  onNext: () => void;
   onPrev: () => void;
   formData: FormData;
   setFormData: (data: FormData) => void;
@@ -21,7 +20,7 @@ interface StepTwoProps {
   error: string;
 }
 
-export default function StepTwo({ onNext, onPrev, formData, setFormData, onSubmit, isLoading, error }: StepTwoProps) {
+export default function StepTwo({ onPrev, formData, setFormData, onSubmit, isLoading, error }: StepTwoProps) {
   const [preview, setPreview] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
