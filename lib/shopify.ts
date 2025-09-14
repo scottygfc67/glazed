@@ -10,7 +10,7 @@ export const shopifyClient = client;
 
 // Product and variant IDs from environment variables
 export const PRODUCT_ID = process.env.SHOPIFY_PRODUCT_ID || '10361268568401';
-export const VARIANT_ID = process.env.SHOPIY_VARIENT_ID || '51884459065681';
+export const VARIANT_ID = process.env.SHOPIFY_VARIANT_ID || '51884459065681';
 
 // GraphQL queries
 export const GET_PRODUCT_QUERY = `
@@ -124,6 +124,22 @@ export const GET_PRODUCTS_QUERY = `
   }
 `;
 
+// Cart creation mutation
+export const CART_CREATE_MUTATION = `
+  mutation cartCreate($lines: [CartLineInput!]) {
+    cartCreate(input: { lines: $lines }) {
+      cart { 
+        id 
+        checkoutUrl 
+      }
+      userErrors { 
+        field 
+        message 
+      }
+    }
+  }
+`;
+
 // Helper functions
 export async function getProduct(id: string = PRODUCT_ID) {
   try {
@@ -149,15 +165,64 @@ export async function getProducts(first: number = 10, query?: string) {
   }
 }
 
-// Create checkout URL for direct purchase
+// Create Shopify cart and get checkout URL (recommended method)
+export async function createShopifyCartAndGetCheckoutUrl(variantId: string, quantity: number) {
+  const domain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || 'zfamh0-xh.myshopify.com';
+  const token = process.env.SHOPIFY_PUBLIC_ACCESS_TOKEN || 'cfa01513c4bc0e8b171a14d579c57603';
+  const endpoint = `https://${domain}/api/2024-10/graphql.json`;
+
+  // Ensure variantId is in the correct format
+  const formattedVariantId = variantId.startsWith('gid://') ? variantId : `gid://shopify/ProductVariant/${variantId}`;
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Storefront-Access-Token': token,
+    },
+    body: JSON.stringify({
+      query: CART_CREATE_MUTATION,
+      variables: { 
+        lines: [{ 
+          merchandiseId: formattedVariantId, 
+          quantity 
+        }] 
+      },
+    }),
+    cache: 'no-store',
+  });
+
+  const json = await res.json();
+  
+  if (json.errors) {
+    console.error('GraphQL errors:', json.errors);
+    throw new Error(JSON.stringify(json.errors, null, 2));
+  }
+  
+  const url = json?.data?.cartCreate?.cart?.checkoutUrl as string | undefined;
+  
+  if (!url) {
+    console.error('No checkout URL returned:', json);
+    throw new Error(JSON.stringify(json?.data?.cartCreate?.userErrors ?? json, null, 2));
+  }
+  
+  return url;
+}
+
+// Fallback: Cart permalink URL
+export function cartPermalinkUrl(variantId: string, quantity: number) {
+  const domain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || 'zfamh0-xh.myshopify.com';
+  return `https://${domain}/cart/${variantId}:${quantity}`;
+}
+
+// Legacy function for backward compatibility
 export function createCheckoutUrl(variantId: string = VARIANT_ID, quantity: number = 1) {
-  const storeDomain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || 'zfamh0-xh.myshopify.com';
-  return `https://${storeDomain}/cart/${variantId}:${quantity}`;
+  return cartPermalinkUrl(variantId, quantity);
 }
 
 // Format price
 export function formatPrice(amount: string, currencyCode: string) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('en-GB', {
     style: 'currency',
     currency: currencyCode,
   }).format(parseFloat(amount));

@@ -1,16 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { display, ui } from "./fonts";
+import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "Glazed Hair Drizzle - Premium Hair Colors",
@@ -69,12 +60,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className={`${display.variable} ${ui.variable} scroll-smooth`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className="font-ui text-ink bg-glaze min-h-screen antialiased"
         suppressHydrationWarning={true}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

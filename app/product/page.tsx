@@ -1,23 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { getProduct, createCheckoutUrl } from '@/lib/shopify';
-import ProductHero from '@/components/ProductHero';
-import SocialProof from '@/components/SocialProof';
-import IngredientsScience from '@/components/IngredientsScience';
-import HowToUse from '@/components/HowToUse';
-import BenefitsProof from '@/components/BenefitsProof';
-import IngredientTransparency from '@/components/IngredientTransparency';
-import StickyCart from '@/components/StickyCart';
-import Header from '@/components/Header';
+import Image from 'next/image';
+import { getProduct, formatPrice } from '@/lib/shopify';
+import { M, fadeUp, stagger, popIn } from '@/components/motion';
+import Balancer from 'react-wrap-balancer';
+import Announcement from '@/components/nav/Announcement';
+import Navbar from '@/components/nav/Navbar';
 import Footer from '@/components/Footer';
+import QuantityBreaks from '@/components/pdp/QuantityBreaks';
+import { ShoppingCart, Star, Truck, Shield, Heart } from 'lucide-react';
+import { createCheckoutUrl } from '@/lib/checkout';
 
 export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,7 +25,6 @@ export default function ProductPage() {
         const productData = await getProduct();
         if (productData) {
           setProduct(productData);
-          // Set first available variant as default
           const firstAvailableVariant = productData.variants?.edges?.find(
             (edge: any) => edge.node.availableForSale
           )?.node;
@@ -33,11 +32,11 @@ export default function ProductPage() {
             setSelectedVariant(firstAvailableVariant);
           }
         } else {
-          // Create a fallback product if API fails
+          // Fallback product
           setProduct({
             id: '10361268568401',
-            title: 'Glazed Hair Drizzle - Premium Hair Color',
-            description: 'Transform your hair with our premium drizzle colors. Professional quality, vibrant results, and endless possibilities for your unique style.',
+            title: 'Glazed Hair Drizzle',
+            description: 'A glossy pre-wash drizzle that melts knots, boosts shine, and revives dull hair — fast. Get healthy, touchable hair from the very first use.',
             featuredImage: {
               url: '/hero.png',
               altText: 'Glazed Hair Drizzle Product'
@@ -47,7 +46,7 @@ export default function ProductPage() {
                 node: {
                   id: '51884459065681',
                   title: 'Default',
-                  price: { amount: '29.99', currencyCode: 'USD' },
+                  price: { amount: '29.99', currencyCode: 'GBP' },
                   availableForSale: true,
                   selectedOptions: []
                 }
@@ -58,18 +57,18 @@ export default function ProductPage() {
           setSelectedVariant({
             id: '51884459065681',
             title: 'Default',
-            price: { amount: '29.99', currencyCode: 'USD' },
+            price: { amount: '29.99', currencyCode: 'GBP' },
             availableForSale: true,
             selectedOptions: []
           });
         }
       } catch (error) {
         console.error('Error fetching product:', error);
-        // Create fallback product on error
+        // Fallback on error
         setProduct({
           id: '10361268568401',
-          title: 'Glazed Hair Drizzle - Premium Hair Color',
-          description: 'Transform your hair with our premium drizzle colors. Professional quality, vibrant results, and endless possibilities for your unique style.',
+          title: 'Glazed Hair Drizzle',
+          description: 'A glossy pre-wash drizzle that melts knots, boosts shine, and revives dull hair — fast. Get healthy, touchable hair from the very first use.',
           featuredImage: {
             url: '/hero.png',
             altText: 'Glazed Hair Drizzle Product'
@@ -79,7 +78,7 @@ export default function ProductPage() {
               node: {
                 id: '51884459065681',
                 title: 'Default',
-                price: { amount: '29.99', currencyCode: 'USD' },
+                price: { amount: '29.99', currencyCode: 'GBP' },
                 availableForSale: true,
                 selectedOptions: []
               }
@@ -90,7 +89,7 @@ export default function ProductPage() {
         setSelectedVariant({
           id: '51884459065681',
           title: 'Default',
-          price: { amount: '29.99', currencyCode: 'USD' },
+          price: { amount: '29.99', currencyCode: 'GBP' },
           availableForSale: true,
           selectedOptions: []
         });
@@ -102,114 +101,292 @@ export default function ProductPage() {
     fetchProduct();
   }, []);
 
+  const handleCheckout = async () => {
+    if (!selectedVariant) return;
+    
+    try {
+      setAddingToCart(true);
+      
+      // Debug logging
+      console.log('Checkout details:', {
+        variantId: selectedVariant.id,
+        quantity: quantity,
+        domain: process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN
+      });
+      
+      // Use the new checkout utility
+      const checkoutUrl = await createCheckoutUrl(selectedVariant.id, quantity);
+      
+      console.log('Generated checkout URL:', checkoutUrl);
+      
+      // Redirect to Shopify checkout
+      window.location.href = checkoutUrl;
+    } catch (error) {
+      console.error('Failed to create checkout URL:', error);
+      alert('Sorry—checkout unavailable right now. Please try again.');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-glazed-blue"></div>
-      </div>
+      <>
+        <Announcement />
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-glaze">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-brand-500"></div>
+        </div>
+      </>
     );
   }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-4">Product Not Found</h1>
-          <p className="text-muted mb-6">The product you're looking for doesn't exist.</p>
-          <Link
-            href="/"
-            className="gradient-bg text-white px-6 py-3 rounded-full font-semibold hover:shadow-lg transition-all duration-200"
-          >
-            Go Home
-          </Link>
+      <>
+        <Announcement />
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center bg-glaze">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-ink mb-4">Product Not Found</h1>
+            <p className="text-muted mb-6">The product you're looking for doesn't exist.</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
-  // Product data is handled by the ProductHero component
-
-  const handleAddToCart = () => {
-    if (selectedVariant) {
-      // For now, just redirect to checkout - in a real app you'd add to cart first
-      const checkoutUrl = createCheckoutUrl(selectedVariant.id, quantity);
-      window.open(checkoutUrl, '_blank');
-    }
-  };
-
-  const handleBuyNow = () => {
-    if (selectedVariant) {
-      const checkoutUrl = createCheckoutUrl(selectedVariant.id, quantity);
-      window.open(checkoutUrl, '_blank');
-    }
-  };
-
   return (
     <>
-      <Header />
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
-      {/* Product Hero Section */}
-      <ProductHero
-        product={product}
-        selectedVariant={selectedVariant}
-        onAddToCart={handleAddToCart}
-        onBuyNow={handleBuyNow}
-      />
+      <Announcement />
+      <Navbar />
+      
+      {/* Hero Product Section */}
+      <section className="relative h-screen overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image 
+            src={product.featuredImage?.url || '/hero.png'} 
+            alt={product.featuredImage?.altText || 'Glazed Hair Drizzle'} 
+            fill 
+            priority 
+            className="object-cover"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-black/70" />
+        </div>
 
-      {/* Social Proof Section */}
-      <SocialProof />
-
-      {/* Science-Backed Ingredients */}
-      <IngredientsScience />
-
-      {/* How to Use Section */}
-      <HowToUse />
-
-      {/* Benefits & Clinical Results */}
-      <BenefitsProof />
-
-      {/* Ingredient Transparency */}
-      <IngredientTransparency />
-
-      {/* Final CTA Section */}
-      <section className="py-20 bg-glazed-blue">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl lg:text-6xl font-bold text-white mb-6">
-            Ready to Transform Your Hair?
-          </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who have discovered the magic of GLAZED hair colors.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={handleAddToCart}
-              className="bg-white text-glazed-blue px-12 py-4 rounded-lg font-bold text-xl hover:bg-gray-100 transition-all duration-300 shadow-lg"
+        {/* Content */}
+        <div className="relative z-10 h-full flex items-center justify-center px-6 sm:px-8 lg:px-12">
+          <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center w-full">
+            {/* Product Image */}
+            <M.div 
+              initial={{ opacity: 0, x: -50 }} 
+              animate={{ opacity: 1, x: 0 }} 
+              transition={{ duration: 0.7 }}
+              className="relative"
             >
-              Add to Cart – ${selectedVariant?.price?.amount || '29.99'}
-            </button>
-            <div className="flex items-center space-x-6 text-white/80">
-              <div className="flex items-center space-x-2">
-                <span>🚚</span>
-                <span className="text-sm">Free Shipping</span>
+              <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-[3/4]">
+                <Image 
+                  src={product.featuredImage?.url || '/hero.png'} 
+                  alt={product.featuredImage?.altText || 'Glazed Hair Drizzle'} 
+                  fill 
+                  className="object-contain drop-shadow-2xl"
+                  sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
+                />
               </div>
-              <div className="flex items-center space-x-2">
-                <span>🔒</span>
-                <span className="text-sm">30-Day Guarantee</span>
-              </div>
-            </div>
+            </M.div>
+
+            {/* Product Info */}
+            <M.div 
+              variants={stagger()} 
+              initial="hidden" 
+              animate="show" 
+              className="text-center lg:text-left px-4 sm:px-0"
+            >
+              <M.p variants={fadeUp} className="eyebrow text-pink-200 mb-4">
+                Premium Hair Care
+              </M.p>
+              
+              <M.h1 variants={fadeUp} className="text-3xl sm:text-4xl md:text-6xl font-display font-bold text-white mb-4 sm:mb-6 drop-shadow-lg">
+                <Balancer>
+                  {product.title}
+                </Balancer>
+              </M.h1>
+              
+              <M.p variants={fadeUp} className="text-base sm:text-lg md:text-xl text-gray-100 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0 drop-shadow-md">
+                {product.description}
+              </M.p>
+
+              {/* Price */}
+              <M.div variants={fadeUp} className="mb-4 sm:mb-6">
+                <div className="text-3xl sm:text-4xl font-bold text-white drop-shadow-lg">
+                  {formatPrice(selectedVariant?.price?.amount || '29.99', selectedVariant?.price?.currencyCode || 'GBP')}
+                </div>
+                <p className="text-gray-300 text-sm mt-1">Free worldwide shipping</p>
+              </M.div>
+
+              {/* Quantity Breaks */}
+              <M.div variants={fadeUp} className="mb-6 sm:mb-8">
+                <label className="block text-white text-sm font-medium mb-3 sm:mb-4">Choose your bundle</label>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                  <QuantityBreaks 
+                    unitPrice={parseFloat(selectedVariant?.price?.amount || '29.99')} 
+                    qty={quantity} 
+                    setQty={setQuantity} 
+                    pairPrice={29.99} 
+                  />
+                </div>
+              </M.div>
+
+              {/* CTA Buttons */}
+              <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8">
+                <button
+                  onClick={handleCheckout}
+                  disabled={addingToCart}
+                  className="inline-flex items-center justify-center rounded-xl bg-brand-500 text-white px-6 sm:px-8 py-3 sm:py-4 shadow-soft hover:bg-brand-600 transition-colors font-medium text-base sm:text-lg disabled:opacity-50"
+                >
+                  <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  {addingToCart ? 'Processing...' : quantity >= 2 ? 'Buy Now — 2 for £29.99 applied' : 'Add to Cart'}
+                </button>
+                <button
+                  onClick={handleCheckout}
+                  disabled={addingToCart}
+                  className="inline-flex items-center justify-center rounded-xl bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 shadow-soft hover:bg-pink-600 transition-colors font-medium text-base sm:text-lg disabled:opacity-50"
+                >
+                  <Heart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                  {addingToCart ? 'Processing...' : 'Checkout Now'}
+                </button>
+              </M.div>
+
+
+              {/* Trust Indicators */}
+              <M.div 
+                variants={stagger(0.1)} 
+                className="grid grid-cols-3 gap-2 sm:gap-4 max-w-md mx-auto lg:mx-0"
+              >
+                {[
+                  { icon: Star, text: '4.9★ Rating', subtext: '25k+ reviews' },
+                  { icon: Truck, text: 'Free Shipping', subtext: 'Worldwide' },
+                  { icon: Shield, text: '30-Day', subtext: 'Money Back' }
+                ].map(({ icon: Icon, text, subtext }, index) => (
+                  <M.div 
+                    key={index}
+                    variants={popIn} 
+                    className="bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center border border-white/20"
+                  >
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white mx-auto mb-1 sm:mb-2" />
+                    <p className="text-xs sm:text-sm font-medium text-white">{text}</p>
+                    <p className="text-xs text-gray-300">{subtext}</p>
+                  </M.div>
+                ))}
+              </M.div>
+            </M.div>
           </div>
         </div>
       </section>
 
-      {/* Sticky Cart */}
-      <StickyCart
-        product={product}
-        selectedVariant={selectedVariant}
-        quantity={quantity}
-        onAddToCart={handleAddToCart}
-        onQuantityChange={setQuantity}
-      />
+      {/* Features Section */}
+      <section className="py-20 bg-glaze">
+        <div className="container mx-auto px-6 sm:px-8 lg:px-4">
+          <M.div 
+            initial="hidden" 
+            whileInView="show" 
+            viewport={{ once: true, amount: 0.3 }} 
+            variants={stagger()}
+            className="text-center mb-16"
+          >
+            <M.h2 variants={fadeUp} className="h2 text-ink mb-4">
+              Why Choose Glazed?
+            </M.h2>
+            <M.p variants={fadeUp} className="lead text-muted max-w-2xl mx-auto">
+              Professional-quality hair care that delivers results from the very first use.
+            </M.p>
+          </M.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                title: 'Melts Knots',
+                description: 'Advanced formula gently untangles even the most stubborn knots without damage.',
+                icon: '✨'
+              },
+              {
+                title: 'Boosts Shine',
+                description: 'Instant luminosity that makes your hair look healthy and vibrant.',
+                icon: '💫'
+              },
+              {
+                title: 'Revives Dull Hair',
+                description: 'Brings back life to tired, damaged hair with nourishing ingredients.',
+                icon: '🌟'
+              }
+            ].map((feature, index) => (
+              <M.div 
+                key={index}
+                initial="hidden" 
+                whileInView="show" 
+                viewport={{ once: true }} 
+                variants={fadeUp}
+                className="glaze-card p-8 text-center"
+              >
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-ink mb-3">{feature.title}</h3>
+                <p className="text-muted">{feature.description}</p>
+              </M.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-20 bg-brand-600">
+        <div className="container mx-auto px-4 text-center">
+          <M.div 
+            initial="hidden" 
+            whileInView="show" 
+            viewport={{ once: true }} 
+            variants={stagger()}
+          >
+            <M.h2 variants={fadeUp} className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+              Ready to Transform Your Hair?
+            </M.h2>
+            <M.p variants={fadeUp} className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              Join thousands of satisfied customers who have discovered the magic of Glazed.
+            </M.p>
+            <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={handleCheckout}
+                disabled={addingToCart}
+                className="inline-flex items-center justify-center rounded-xl bg-white text-brand-600 px-8 py-4 shadow-soft hover:bg-gray-100 transition-colors font-medium text-lg disabled:opacity-50"
+              >
+                <Heart className="h-5 w-5 mr-2" />
+                Get Yours Now
+              </button>
+            </M.div>
+          </M.div>
+        </div>
+      </section>
+
+      {/* Mobile Sticky Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur border-t border-line p-3 md:hidden">
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-sm">
+            <div className="font-medium text-ink">{quantity} × {product.title}</div>
+            <div className="text-xs text-muted">
+              {quantity >= 2 ? '2 for £29.99 auto‑applies' : 'Add one more for 2 for £29.99'}
+            </div>
+          </div>
+          <button 
+            onClick={handleCheckout} 
+            disabled={addingToCart}
+            className="px-4 h-10 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600 transition-colors disabled:opacity-50"
+          >
+            {addingToCart ? 'Processing...' : 'Checkout'}
+          </button>
+        </div>
       </div>
+
       <Footer />
     </>
   );
