@@ -210,8 +210,11 @@ export default function ProductPage() {
       <Announcement />
       <Navbar />
       
+      {/* Main content wrapper with proper mobile padding */}
+      <div className="pb-24 md:pb-0">
+      
       {/* Hero Product Section */}
-      <section className="relative h-screen overflow-hidden">
+      <section className="relative min-h-screen sm:h-screen overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0">
           <Image 
@@ -226,7 +229,7 @@ export default function ProductPage() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 h-full flex items-center justify-center px-6 sm:px-8 lg:px-12">
+        <div className="relative z-10 min-h-screen sm:h-full flex items-center justify-center py-8 sm:py-0 px-4 sm:px-6 lg:px-12">
           <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center w-full">
             {/* Product Image */}
             <M.div 
@@ -251,7 +254,7 @@ export default function ProductPage() {
               variants={stagger()} 
               initial="hidden" 
               animate="show" 
-              className="text-center lg:text-left px-4 sm:px-0"
+              className="text-center lg:text-left px-2 sm:px-0"
             >
               <M.p variants={fadeUp} className="eyebrow text-pink-200 mb-4">
                 Premium Hair Care
@@ -277,8 +280,8 @@ export default function ProductPage() {
 
               {/* Quantity Breaks */}
               <M.div variants={fadeUp} className="mb-6 sm:mb-8">
-                <label className="block text-white text-sm font-medium mb-3 sm:mb-4">Choose your bundle</label>
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+                <label className="block text-white text-sm font-medium mb-3 sm:mb-4 px-2 sm:px-0">Choose your bundle</label>
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 sm:p-6 border border-white/20 mx-2 sm:mx-0">
                   <QuantityBreaks 
                     unitPrice={parseFloat(selectedVariant?.price?.amount || '29.99')} 
                     qty={quantity} 
@@ -289,7 +292,7 @@ export default function ProductPage() {
               </M.div>
 
               {/* CTA Buttons */}
-              <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8">
+              <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8 px-2 sm:px-0">
                 <button
                   onClick={() => {
                     console.log('Add to cart button clicked!');
@@ -342,8 +345,8 @@ export default function ProductPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-glaze">
-        <div className="container mx-auto px-6 sm:px-8 lg:px-4">
+      <section className="py-16 sm:py-20 bg-glaze">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <M.div 
             initial="hidden" 
             whileInView="show" 
@@ -424,7 +427,7 @@ export default function ProductPage() {
       </section>
 
       {/* Mobile Sticky Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur border-t border-line p-3 md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-line p-3 md:hidden">
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm">
             <div className="font-medium text-ink">{quantity} × {product.title}</div>
@@ -441,6 +444,11 @@ export default function ProductPage() {
           </button>
         </div>
       </div>
+
+      {/* Bottom padding for mobile sticky bar */}
+      <div className="h-20 md:hidden"></div>
+      
+      </div> {/* End main content wrapper */}
 
       <Footer />
     </>

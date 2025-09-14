@@ -36,12 +36,47 @@ export default function Footer() {
             </li>
             <li>
               <a href="/shipping" className="hover:text-brand-600 transition-colors">
-                Shipping & Returns
+                Shipping
+              </a>
+            </li>
+            <li>
+              <a href="/returns" className="hover:text-brand-600 transition-colors">
+                Returns
+              </a>
+            </li>
+            <li>
+              <a href="/money-back-guarantee" className="hover:text-brand-600 transition-colors">
+                Money Back Guarantee
               </a>
             </li>
             <li>
               <a href="/contact" className="hover:text-brand-600 transition-colors">
                 Contact
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h5 className="font-medium mb-2 text-ink">Company</h5>
+          <ul className="space-y-2 text-sm text-muted">
+            <li>
+              <a href="/about" className="hover:text-brand-600 transition-colors">
+                About Us
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:text-brand-600 transition-colors">
+                Contact
+              </a>
+            </li>
+            <li>
+              <a href="/terms" className="hover:text-brand-600 transition-colors">
+                Terms of Service
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" className="hover:text-brand-600 transition-colors">
+                Privacy Policy
               </a>
             </li>
           </ul>

@@ -11,7 +11,7 @@ import Navbar from '@/components/nav/Navbar';
 import Footer from '@/components/Footer';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeItem, getTotalPrice, getTotalQuantity, clearCart } = useCart();
+  const { cartItems, updateQuantity, removeItem, getTotalPrice, getTotalQuantity, getSavings, getOriginalPrice, clearCart } = useCart();
   const [checkingOut, setCheckingOut] = useState(false);
 
 
@@ -113,7 +113,23 @@ export default function CartPage() {
                         
                         <div className="flex-1">
                           <h3 className="font-medium text-ink">{item.name}</h3>
-                          <p className="text-pink-500 font-semibold">£{item.price.toFixed(2)}</p>
+                          <div className="flex items-center gap-2">
+                            {item.quantity >= 2 && (
+                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                2 for £29.99
+                              </span>
+                            )}
+                            <p className="text-pink-500 font-semibold">
+                              £{(() => {
+                                if (item.quantity >= 2) {
+                                  const pairs = Math.floor(item.quantity / 2);
+                                  const remaining = item.quantity % 2;
+                                  return (pairs * 29.99 + remaining * item.price).toFixed(2);
+                                }
+                                return (item.price * item.quantity).toFixed(2);
+                              })()}
+                            </p>
+                          </div>
                         </div>
                         
                         <div className="flex items-center gap-2">
@@ -150,6 +166,15 @@ export default function CartPage() {
                   <h2 className="text-xl font-semibold text-ink mb-6">Order Summary</h2>
                   
                   <div className="space-y-4 mb-6">
+                    {getSavings() > 0 && (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-green-800 text-sm font-medium">2 for £29.99 Applied!</span>
+                          <span className="text-green-600 font-semibold">-£{getSavings().toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="flex justify-between">
                       <span className="text-muted">Subtotal</span>
                       <span className="font-medium">£{getTotalPrice().toFixed(2)}</span>

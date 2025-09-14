@@ -19,6 +19,8 @@ interface CartContextType {
   clearCart: () => void;
   getTotalPrice: () => number;
   getTotalQuantity: () => number;
+  getSavings: () => number;
+  getOriginalPrice: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -92,12 +94,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getTotalPrice = useCallback(() => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cartItems.reduce((total, item) => {
+      // Apply quantity pricing logic: 2 bottles for £29.99
+      if (item.quantity >= 2) {
+        // For 2 or more bottles, use the special pricing
+        const pairs = Math.floor(item.quantity / 2);
+        const remaining = item.quantity % 2;
+        return total + (pairs * 29.99) + (remaining * item.price);
+      } else {
+        // For 1 bottle, use regular price
+        return total + (item.price * item.quantity);
+      }
+    }, 0);
   }, [cartItems]);
 
   const getTotalQuantity = useCallback(() => {
     return cartItems.reduce((total, item) => total + item.quantity, 0);
   }, [cartItems]);
+
+  const getOriginalPrice = useCallback(() => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  }, [cartItems]);
+
+  const getSavings = useCallback(() => {
+    const originalPrice = getOriginalPrice();
+    const totalPrice = getTotalPrice();
+    return originalPrice - totalPrice;
+  }, [getOriginalPrice, getTotalPrice]);
 
   return (
     <CartContext.Provider value={{
@@ -108,6 +131,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       clearCart,
       getTotalPrice,
       getTotalQuantity,
+      getSavings,
+      getOriginalPrice,
     }}>
       {children}
     </CartContext.Provider>
