@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import QuantityBreaks from '@/components/pdp/QuantityBreaks';
 import { ShoppingCart, Star, Truck, Shield, Heart } from 'lucide-react';
 import { useCart } from '@/lib/cart-context';
+import { useNotification } from '@/lib/notification-context';
 
 export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
@@ -20,6 +21,7 @@ export default function ProductPage() {
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const { addToCart } = useCart();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -139,15 +141,15 @@ export default function ProductPage() {
       // Add to cart
       addToCart(cartItem);
       
-      // Show success message
-      alert(`Added ${quantity} ${quantity === 1 ? 'bottle' : 'bottles'} to cart!`);
+      // Show success notification
+      showNotification(`Added ${quantity} ${quantity === 1 ? 'bottle' : 'bottles'} to cart!`, 'success');
     } catch (error) {
       console.error('Failed to add to cart:', error);
-      alert('Failed to add to cart. Please try again.');
+      showNotification('Failed to add to cart. Please try again.', 'error');
     } finally {
       setAddingToCart(false);
     }
-  }, [product, selectedVariant, quantity, addToCart]);
+  }, [product, selectedVariant, quantity, addToCart, showNotification]);
 
   const handleBuyNow = useCallback(async () => {
     console.log('Buy now clicked!', { product, selectedVariant, quantity });
@@ -170,11 +172,11 @@ export default function ProductPage() {
       window.location.href = checkoutUrl;
     } catch (error) {
       console.error('Failed to create checkout URL:', error);
-      alert('Sorry—checkout unavailable right now. Please try again.');
+      showNotification('Sorry—checkout unavailable right now. Please try again.', 'error');
     } finally {
       setAddingToCart(false);
     }
-  }, [quantity]);
+  }, [quantity, showNotification]);
 
   if (loading) {
     return (

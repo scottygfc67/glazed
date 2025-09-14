@@ -3,6 +3,7 @@ import { ReactNode, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Lenis from 'lenis'
 import { CartProvider } from '@/lib/cart-context'
+import { NotificationProvider } from '@/lib/notification-context'
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -25,8 +26,10 @@ export function Providers({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <CartProvider>
-      <AnimatePresence mode="wait">{children}</AnimatePresence>
-    </CartProvider>
+    <NotificationProvider>
+      <CartProvider>
+        <AnimatePresence mode="wait">{children}</AnimatePresence>
+      </CartProvider>
+    </NotificationProvider>
   )
 }
