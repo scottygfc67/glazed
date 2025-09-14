@@ -17,7 +17,7 @@ export default function Marquee() {
   
   return (
     <div className="overflow-hidden border-y border-line">
-      <div className="flex gap-16 py-6 whitespace-nowrap" ref={ref}>
+      <div className="flex gap-24 py-6 whitespace-nowrap" ref={ref}>
         {Array.from({ length: 12 }).map((_, i) => (
           <span key={i} className="text-lg text-muted">
             Vegan • Honey‑glow • Dermatologist Tested • Color‑safe

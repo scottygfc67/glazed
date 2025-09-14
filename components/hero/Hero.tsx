@@ -79,9 +79,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Floating elements - simplified for performance */}
-      <div className="absolute top-20 left-10 w-16 h-16 rounded-full opacity-80 bg-pink-200 animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-14 h-14 rounded-full opacity-80 bg-pink-200 animate-pulse" />
     </section>
   )
 }
