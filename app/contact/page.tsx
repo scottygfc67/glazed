@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { M, fadeUp, stagger } from '@/components/motion';
 import { Mail, Phone, MapPin, Clock } from 'lucide-react';
 import Announcement from '@/components/nav/Announcement';
 import Navbar from '@/components/nav/Navbar';
@@ -37,20 +36,15 @@ export default function ContactPage() {
         {/* Hero Section */}
         <section className="relative py-20 sm:py-32">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <M.div
-              initial="hidden"
-              animate="visible"
-              variants={stagger(0.1)}
-              className="text-center max-w-4xl mx-auto"
-            >
-              <M.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+            <div className="text-center max-w-4xl mx-auto">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink mb-6">
                 Get in Touch
-              </M.h1>
-              <M.p variants={fadeUp} className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              </h1>
+              <p className="text-xl text-ink/80 mb-8 max-w-2xl mx-auto">
                 Have questions about our products? Need help with your order? 
                 We're here to help and would love to hear from you.
-              </M.p>
-            </M.div>
+              </p>
+            </div>
           </div>
         </section>
 
@@ -59,21 +53,16 @@ export default function ContactPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12">
               {/* Contact Form */}
-              <M.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={stagger(0.1)}
-              >
-                <M.h2 variants={fadeUp} className="text-3xl font-bold text-ink mb-6">
+              <div>
+                <h2 className="text-3xl font-bold text-ink mb-6">
                   Send us a message
-                </M.h2>
-                <M.p variants={fadeUp} className="text-muted mb-8">
+                </h2>
+                <p className="text-muted mb-8">
                   Fill out the form below and we'll get back to you within 24 hours.
-                </M.p>
+                </p>
                 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <M.div variants={fadeUp} className="grid sm:grid-cols-2 gap-6">
+                  <div className="grid sm:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-ink mb-2">
                         Name *
@@ -104,9 +93,9 @@ export default function ContactPage() {
                         placeholder="your@email.com"
                       />
                     </div>
-                  </M.div>
+                  </div>
                   
-                  <M.div variants={fadeUp}>
+                  <div>
                     <label htmlFor="subject" className="block text-sm font-medium text-ink mb-2">
                       Subject *
                     </label>
@@ -126,9 +115,9 @@ export default function ContactPage() {
                       <option value="feedback">Feedback</option>
                       <option value="other">Other</option>
                     </select>
-                  </M.div>
+                  </div>
                   
-                  <M.div variants={fadeUp}>
+                  <div>
                     <label htmlFor="message" className="block text-sm font-medium text-ink mb-2">
                       Message *
                     </label>
@@ -142,37 +131,31 @@ export default function ContactPage() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-transparent resize-none"
                       placeholder="Tell us how we can help you..."
                     />
-                  </M.div>
+                  </div>
                   
-                  <M.div variants={fadeUp}>
+                  <div>
                     <button
                       type="submit"
                       className="w-full bg-pink-500 text-white py-4 rounded-xl font-semibold hover:bg-pink-600 transition-colors"
                     >
                       Send Message
                     </button>
-                  </M.div>
+                  </div>
                 </form>
-              </M.div>
+              </div>
 
               {/* Contact Info */}
-              <M.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={stagger(0.1)}
-                className="space-y-8"
-              >
-                <M.div variants={fadeUp}>
+              <div className="space-y-8">
+                <div>
                   <h2 className="text-3xl font-bold text-ink mb-6">
                     Contact Information
                   </h2>
                   <p className="text-muted mb-8">
                     Prefer to reach out directly? Here are all the ways you can get in touch with us.
                   </p>
-                </M.div>
+                </div>
 
-                <M.div variants={fadeUp} className="space-y-6">
+                <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
                       <Mail className="h-6 w-6 text-pink-500" />
@@ -221,16 +204,16 @@ export default function ContactPage() {
                       </p>
                     </div>
                   </div>
-                </M.div>
+                </div>
 
-                <M.div variants={fadeUp} className="bg-gray-50 rounded-xl p-6">
+                <div className="bg-gray-50 rounded-xl p-6">
                   <h3 className="font-semibold text-ink mb-2">Quick Response Times</h3>
                   <p className="text-sm text-muted">
                     We pride ourselves on fast, helpful customer service. Most inquiries 
                     are answered within 2-4 hours during business hours.
                   </p>
-                </M.div>
-              </M.div>
+                </div>
+              </div>
             </div>
           </div>
         </section>

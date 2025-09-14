@@ -22,13 +22,13 @@ export default function ReturnsPage() {
               variants={stagger(0.1)}
               className="text-center max-w-4xl mx-auto"
             >
-              <M.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink mb-6">
                 Returns & Exchanges
-              </M.h1>
-              <M.p variants={fadeUp} className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+              </h1>
+              <p className="text-xl text-ink/80 mb-8 max-w-2xl mx-auto">
                 Not completely satisfied? We offer hassle-free returns and exchanges 
                 within 30 days of purchase.
-              </M.p>
+              </p>
             </M.div>
           </div>
         </section>
