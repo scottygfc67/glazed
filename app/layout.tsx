@@ -61,6 +61,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${display.variable} ${ui.variable} scroll-smooth`}>
+      <head>
+        {/* Preload critical resources */}
+        <link rel="preload" href="/hero.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/logotran.png" as="image" type="image/png" />
+        <link rel="dns-prefetch" href="//cdn.shopify.com" />
+        <link rel="dns-prefetch" href="//zfamh0-xh.myshopify.com" />
+      </head>
       <body
         className="font-ui text-ink bg-glaze min-h-screen antialiased"
         suppressHydrationWarning={true}

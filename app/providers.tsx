@@ -2,6 +2,7 @@
 import { ReactNode, useEffect } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import Lenis from 'lenis'
+import { CartProvider } from '@/lib/cart-context'
 
 export function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -23,5 +24,9 @@ export function Providers({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  return <AnimatePresence mode="wait">{children}</AnimatePresence>
+  return (
+    <CartProvider>
+      <AnimatePresence mode="wait">{children}</AnimatePresence>
+    </CartProvider>
+  )
 }

@@ -4,9 +4,12 @@ import Image from 'next/image'
 import { ShoppingBag, Search, User, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import clsx from 'clsx'
+import { useCart } from '@/lib/cart-context'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
+  const { getTotalQuantity } = useCart()
+  const cartQuantity = getTotalQuantity()
   
   return (
     <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-white/60">
@@ -64,9 +67,11 @@ export default function Navbar() {
             className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <ShoppingBag className="h-5 w-5" />
-            <span className="absolute -top-2 -right-2 text-[10px] bg-brand-500 text-white rounded-full px-[6px] py-[1px]">
-              2
-            </span>
+            {cartQuantity > 0 && (
+              <span className="absolute -top-1 -right-1 bg-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
+                {cartQuantity}
+              </span>
+            )}
           </Link>
         </div>
       </nav>

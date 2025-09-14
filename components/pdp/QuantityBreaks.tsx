@@ -1,6 +1,7 @@
 'use client';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
+import { memo } from 'react';
 
 type Props = {
   unitPrice: number;             // e.g., 29.99 from product
@@ -9,7 +10,7 @@ type Props = {
   pairPrice?: number;            // default 29.99
 };
 
-export default function QuantityBreaks({ unitPrice, qty, setQty, pairPrice = 29.99 }: Props) {
+const QuantityBreaks = memo(function QuantityBreaks({ unitPrice, qty, setQty, pairPrice = 29.99 }: Props) {
 
   const tiers = [
     { qty: 1, label: '1 bottle', price: `£${unitPrice.toFixed(2)}` },
@@ -60,4 +61,6 @@ export default function QuantityBreaks({ unitPrice, qty, setQty, pairPrice = 29.
 
     </div>
   );
-}
+});
+
+export default QuantityBreaks;

@@ -19,16 +19,22 @@ export function cartPermalinkUrl(variantId: string, quantity: number): string {
   // Permalinks require the numeric variant ID, not the GID.
   const numeric = (variantId.match(/\d+/)?.[0]) ?? variantId;
   const qty = Math.max(1, Number(quantity) || 1);
-  // Append a benign query to bust caches/debug if desired
-  return `https://${domain}/cart/${numeric}:${qty}`;
+  // Use Shopify's hosted checkout format
+  return `https://${domain}/cart/${numeric}:${qty}?checkout[source]=product&checkout[quantity]=${qty}`;
 }
 
 export async function createCheckoutUrl(variantId: string, quantity: number): Promise<string> {
+  console.log('createCheckoutUrl called with:', { variantId, quantity });
+  
   const domain = getDomain();
   const qty = Math.max(1, Number(quantity) || 1);
+  
+  console.log('Using domain:', domain, 'quantity:', qty);
 
   // Try Storefront API first (recommended)
   const token = process.env.SHOPIFY_PUBLIC_ACCESS_TOKEN;
+  console.log('Token available:', !!token);
+  
   if (token) {
     try {
       const endpoint = `https://${domain}/api/2024-04/graphql.json`;
@@ -40,6 +46,9 @@ export async function createCheckoutUrl(variantId: string, quantity: number): Pr
           }
         }
       `;
+      
+      console.log('Making Storefront API request to:', endpoint);
+      
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -54,8 +63,13 @@ export async function createCheckoutUrl(variantId: string, quantity: number): Pr
       });
 
       const json = await res.json();
+      console.log('Storefront API response:', json);
+      
       const url = json?.data?.cartCreate?.cart?.checkoutUrl as string | undefined;
-      if (url) return url;
+      if (url) {
+        console.log('Checkout URL from Storefront API:', url);
+        return url;
+      }
 
       // Log userErrors to console for debugging
       if (json?.data?.cartCreate?.userErrors?.length) {
@@ -67,5 +81,7 @@ export async function createCheckoutUrl(variantId: string, quantity: number): Pr
   }
 
   // Fallback: cart permalink (single‑variant)
-  return cartPermalinkUrl(variantId, qty);
+  const permalink = cartPermalinkUrl(variantId, qty);
+  console.log('Using permalink fallback:', permalink);
+  return permalink;
 }

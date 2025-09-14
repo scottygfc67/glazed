@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { getProduct, formatPrice } from '@/lib/shopify';
 import { M, fadeUp, stagger, popIn } from '@/components/motion';
 import Balancer from 'react-wrap-balancer';
@@ -10,7 +11,7 @@ import Navbar from '@/components/nav/Navbar';
 import Footer from '@/components/Footer';
 import QuantityBreaks from '@/components/pdp/QuantityBreaks';
 import { ShoppingCart, Star, Truck, Shield, Heart } from 'lucide-react';
-import { createCheckoutUrl } from '@/lib/checkout';
+import { useCart } from '@/lib/cart-context';
 
 export default function ProductPage() {
   const [product, setProduct] = useState<any>(null);
@@ -18,20 +19,32 @@ export default function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        console.log('Fetching product from Shopify...');
+        console.log('Using product ID:', process.env.SHOPIFY_PRODUCT_ID || '10361268568401');
+        console.log('Using domain:', process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN);
+        console.log('Using token:', !!process.env.SHOPIFY_PUBLIC_ACCESS_TOKEN);
+        
         const productData = await getProduct();
+        console.log('Product data from Shopify:', productData);
+        
         if (productData) {
           setProduct(productData);
           const firstAvailableVariant = productData.variants?.edges?.find(
             (edge: any) => edge.node.availableForSale
           )?.node;
           if (firstAvailableVariant) {
+            console.log('Selected variant from Shopify:', firstAvailableVariant);
             setSelectedVariant(firstAvailableVariant);
+          } else {
+            console.log('No available variants found in Shopify data');
           }
         } else {
+          console.log('No product data returned from Shopify, using fallback');
           // Fallback product
           setProduct({
             id: '10361268568401',
@@ -101,23 +114,57 @@ export default function ProductPage() {
     fetchProduct();
   }, []);
 
-  const handleCheckout = async () => {
-    if (!selectedVariant) return;
+  const handleAddToCart = useCallback(() => {
+    console.log('Add to cart clicked!', { product, selectedVariant, quantity });
+    
+    // Use fallback data if product/variant not loaded
+    const productTitle = product?.title || 'Glazed Hair Drizzle';
+    const productPrice = selectedVariant?.price?.amount || '29.99';
+    const productImage = product?.featuredImage?.url || '/hero.png';
+    const variantId = process.env.NEXT_PUBLIC_SHOPIFY_VARIANT_ID || '51884459065681';
     
     try {
       setAddingToCart(true);
       
-      // Debug logging
-      console.log('Checkout details:', {
-        variantId: selectedVariant.id,
+      const cartItem = {
+        name: productTitle,
+        price: parseFloat(productPrice),
         quantity: quantity,
-        domain: process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN
-      });
+        image: productImage,
+        variantId: variantId,
+      };
       
-      // Use the new checkout utility
-      const checkoutUrl = await createCheckoutUrl(selectedVariant.id, quantity);
+      console.log('Adding to cart:', cartItem);
       
-      console.log('Generated checkout URL:', checkoutUrl);
+      // Add to cart
+      addToCart(cartItem);
+      
+      // Show success message
+      alert(`Added ${quantity} ${quantity === 1 ? 'bottle' : 'bottles'} to cart!`);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      alert('Failed to add to cart. Please try again.');
+    } finally {
+      setAddingToCart(false);
+    }
+  }, [product, selectedVariant, quantity, addToCart]);
+
+  const handleBuyNow = useCallback(async () => {
+    console.log('Buy now clicked!', { product, selectedVariant, quantity });
+    
+    try {
+      setAddingToCart(true);
+      
+      // Use variant ID from environment variables or fallback to hardcoded
+      const variantId = process.env.NEXT_PUBLIC_SHOPIFY_VARIANT_ID || '51884459065681';
+      const domain = process.env.NEXT_PUBLIC_SHOPIFY_DOMAIN || 'zfamh0-xh.myshopify.com';
+      
+      console.log('Creating checkout URL:', { variantId, quantity, domain });
+      
+      // Create direct Shopify checkout URL
+      const checkoutUrl = `https://${domain}/cart/${variantId}:${quantity}?checkout[source]=product&checkout[quantity]=${quantity}`;
+      
+      console.log('Checkout URL created:', checkoutUrl);
       
       // Redirect to Shopify checkout
       window.location.href = checkoutUrl;
@@ -127,7 +174,7 @@ export default function ProductPage() {
     } finally {
       setAddingToCart(false);
     }
-  };
+  }, [quantity]);
 
   if (loading) {
     return (
@@ -242,20 +289,26 @@ export default function ProductPage() {
               {/* CTA Buttons */}
               <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8">
                 <button
-                  onClick={handleCheckout}
+                  onClick={() => {
+                    console.log('Add to cart button clicked!');
+                    handleAddToCart();
+                  }}
                   disabled={addingToCart}
                   className="inline-flex items-center justify-center rounded-xl bg-brand-500 text-white px-6 sm:px-8 py-3 sm:py-4 shadow-soft hover:bg-brand-600 transition-colors font-medium text-base sm:text-lg disabled:opacity-50"
                 >
                   <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  {addingToCart ? 'Processing...' : quantity >= 2 ? 'Buy Now — 2 for £29.99 applied' : 'Add to Cart'}
+                  {addingToCart ? 'Adding...' : 'Add to Cart'}
                 </button>
                 <button
-                  onClick={handleCheckout}
+                  onClick={() => {
+                    console.log('Buy now button clicked!');
+                    handleBuyNow();
+                  }}
                   disabled={addingToCart}
                   className="inline-flex items-center justify-center rounded-xl bg-pink-500 text-white px-6 sm:px-8 py-3 sm:py-4 shadow-soft hover:bg-pink-600 transition-colors font-medium text-base sm:text-lg disabled:opacity-50"
                 >
                   <Heart className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-                  {addingToCart ? 'Processing...' : 'Checkout Now'}
+                  {addingToCart ? 'Processing...' : 'Buy Now'}
                 </button>
               </M.div>
 
@@ -356,12 +409,12 @@ export default function ProductPage() {
             </M.p>
             <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={handleCheckout}
+                onClick={handleBuyNow}
                 disabled={addingToCart}
                 className="inline-flex items-center justify-center rounded-xl bg-white text-brand-600 px-8 py-4 shadow-soft hover:bg-gray-100 transition-colors font-medium text-lg disabled:opacity-50"
               >
                 <Heart className="h-5 w-5 mr-2" />
-                Get Yours Now
+                Buy Now
               </button>
             </M.div>
           </M.div>
@@ -378,11 +431,11 @@ export default function ProductPage() {
             </div>
           </div>
           <button 
-            onClick={handleCheckout} 
+            onClick={handleBuyNow} 
             disabled={addingToCart}
             className="px-4 h-10 rounded-lg bg-pink-500 text-white font-semibold hover:bg-pink-600 transition-colors disabled:opacity-50"
           >
-            {addingToCart ? 'Processing...' : 'Checkout'}
+            {addingToCart ? 'Processing...' : 'Buy Now'}
           </button>
         </div>
       </div>

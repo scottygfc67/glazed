@@ -9,7 +9,7 @@ export default function Hero() {
       {/* Full background image */}
       <div className="absolute inset-0">
         <Image 
-          src="/hero.png" 
+          src="/hero.svg" 
           alt="Glazed Hair Drizzle" 
           fill 
           priority 
@@ -79,23 +79,9 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Floating elements */}
-      <M.img 
-        src="/grainy.jpg" 
-        alt="donut" 
-        className="absolute top-20 left-10 w-16 h-16 rounded-full opacity-80"
-        initial={{ y: -10 }} 
-        animate={{ y: [-10, 6, -10] }} 
-        transition={{ duration: 4, repeat: Infinity }}
-      />
-      <M.img 
-        src="/grainy.jpg" 
-        alt="confetti" 
-        className="absolute bottom-20 right-10 w-14 h-14 rounded-full opacity-80"
-        initial={{ y: 0 }} 
-        animate={{ y: [0, -8, 0] }} 
-        transition={{ duration: 5, repeat: Infinity }}
-      />
+      {/* Floating elements - simplified for performance */}
+      <div className="absolute top-20 left-10 w-16 h-16 rounded-full opacity-80 bg-pink-200 animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-14 h-14 rounded-full opacity-80 bg-pink-200 animate-pulse" />
     </section>
   )
 }
