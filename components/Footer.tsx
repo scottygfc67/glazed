@@ -1,9 +1,19 @@
+import Image from 'next/image'
+
 export default function Footer() {
   return (
     <footer className="mt-24 border-t border-line bg-white">
       <div className="container py-14 grid gap-10 md:grid-cols-4">
         <div>
-          <h4 className="font-semibold mb-3 text-ink">Glazed</h4>
+          <div className="mb-3">
+            <Image 
+              src="/logotran.png" 
+              alt="Glazed" 
+              width={120} 
+              height={40}
+              className="h-8 w-auto"
+            />
+          </div>
           <p className="text-sm text-muted">Glow today, glaze tomorrow.</p>
         </div>
         <div>

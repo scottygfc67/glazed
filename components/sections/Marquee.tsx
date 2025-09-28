@@ -17,12 +17,17 @@ export default function Marquee() {
   
   return (
     <div className="overflow-hidden border-y border-line">
-      <div className="flex gap-24 py-6 whitespace-nowrap" ref={ref}>
-        {Array.from({ length: 12 }).map((_, i) => (
-          <span key={i} className="text-lg text-muted">
-            Vegan • Honey‑glow • Dermatologist Tested • Color‑safe
-          </span>
-        ))}
+      <div className="flex gap-8 py-6 whitespace-nowrap" ref={ref}>
+        {Array.from({ length: 20 }).map((_, i) => {
+          const items = ['Vegan', 'Honey‑glow', 'Dermatologist Tested', 'Color‑safe']
+          const item = items[i % items.length]
+          return (
+            <span key={i} className="text-lg text-muted flex items-center">
+              {item}
+              {i < 19 && <span className="mx-4">•</span>}
+            </span>
+          )
+        })}
       </div>
     </div>
   )
