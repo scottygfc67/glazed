@@ -86,7 +86,7 @@ export default function ProductSpotlight() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl sm:text-5xl font-bold text-ink mb-6">
-            Featured Product
+            The Drizzle that Does it All
           </h2>
           <p className="text-xl text-muted max-w-2xl mx-auto">
             Discover our best-selling hair treatment that's transforming hair care routines worldwide
