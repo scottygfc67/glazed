@@ -95,12 +95,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const getTotalPrice = useCallback(() => {
     return cartItems.reduce((total, item) => {
-      // Apply quantity pricing logic: 2 bottles for £29.99
+      // Apply quantity pricing logic: 2 bottles for £32.99
       if (item.quantity >= 2) {
         // For 2 or more bottles, use the special pricing
         const pairs = Math.floor(item.quantity / 2);
         const remaining = item.quantity % 2;
-        return total + (pairs * 29.99) + (remaining * item.price);
+        return total + (pairs * 32.99) + (remaining * item.price);
       } else {
         // For 1 bottle, use regular price
         return total + (item.price * item.quantity);

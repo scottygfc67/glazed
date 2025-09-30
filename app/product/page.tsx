@@ -286,7 +286,7 @@ export default function ProductPage() {
                     unitPrice={parseFloat(selectedVariant?.price?.amount || '29.99')} 
                     qty={quantity} 
                     setQty={setQuantity} 
-                    pairPrice={29.99} 
+                    pairPrice={32.99} 
                   />
                 </div>
               </M.div>
@@ -432,7 +432,7 @@ export default function ProductPage() {
           <div className="text-sm">
             <div className="font-medium text-ink">{quantity} × {product.title}</div>
             <div className="text-xs text-muted">
-              {quantity >= 2 ? '2 for £29.99 auto‑applies' : 'Add one more for 2 for £29.99'}
+              {quantity >= 2 ? '2 for £32.99 auto‑applies' : 'Add one more for 2 for £32.99'}
             </div>
           </div>
           <button 

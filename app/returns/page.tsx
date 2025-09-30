@@ -13,42 +13,55 @@ export default function ReturnsPage() {
       <Navbar />
       
       <main className="min-h-screen bg-glaze">
-        {/* Hero Section */}
-        <section className="relative py-20 sm:py-32">
+        {/* Hero / Promise Banner */}
+        <section className="relative py-16 sm:py-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <M.div
               initial="hidden"
-              animate="visible"
+              animate="show"
               variants={stagger(0.1)}
-              className="text-center max-w-4xl mx-auto"
+              className="max-w-5xl mx-auto"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-ink mb-6">
-                Returns & Exchanges
-              </h1>
-              <p className="text-xl text-ink/80 mb-8 max-w-2xl mx-auto">
-                Not completely satisfied? We offer hassle-free returns and exchanges 
-                within 30 days of purchase.
-              </p>
+              <div className="glaze-card bg-white/80 p-6 sm:p-10 text-center">
+                <h1 className="text-3xl sm:text-5xl font-bold text-ink mb-4">30‑Day Money‑Back</h1>
+                <p className="text-base sm:text-lg text-muted max-w-2xl mx-auto mb-6">
+                  Love your glow or get your money back. Free returns and free exchanges on every order.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                  <div className="rounded-xl border border-line bg-white p-4 flex items-center justify-center gap-3">
+                    <Clock className="h-5 w-5 text-pink-500" />
+                    <span className="font-medium text-ink">30‑Day Window</span>
+                  </div>
+                  <div className="rounded-xl border border-line bg-white p-4 flex items-center justify-center gap-3">
+                    <RotateCcw className="h-5 w-5 text-pink-500" />
+                    <span className="font-medium text-ink">Free Returns</span>
+                  </div>
+                  <div className="rounded-xl border border-line bg-white p-4 flex items-center justify-center gap-3">
+                    <Shield className="h-5 w-5 text-pink-500" />
+                    <span className="font-medium text-ink">Full Refund</span>
+                  </div>
+                </div>
+              </div>
             </M.div>
           </div>
         </section>
 
         {/* Return Policy */}
-        <section className="py-16 sm:py-24 bg-white">
+        <section className="py-12 sm:py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <M.div
               initial="hidden"
-              whileInView="visible"
+              whileInView="show"
               viewport={{ once: true }}
               variants={stagger(0.1)}
-              className="max-w-4xl mx-auto"
+              className="max-w-5xl mx-auto"
             >
-              <M.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-ink mb-12 text-center">
+              <M.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-ink mb-8 text-center">
                 Our Return Policy
               </M.h2>
               
-              <div className="grid md:grid-cols-3 gap-8">
-                <M.div variants={fadeUp} className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+              <div className="grid md:grid-cols-3 gap-6">
+                <M.div variants={fadeUp} className="bg-white border border-line rounded-2xl p-6 shadow-sm">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Clock className="h-8 w-8 text-pink-500" />
                   </div>
@@ -58,7 +71,7 @@ export default function ReturnsPage() {
                   </p>
                 </M.div>
 
-                <M.div variants={fadeUp} className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+                <M.div variants={fadeUp} className="bg-white border border-line rounded-2xl p-6 shadow-sm">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <RotateCcw className="h-8 w-8 text-pink-500" />
                   </div>
@@ -68,7 +81,7 @@ export default function ReturnsPage() {
                   </p>
                 </M.div>
 
-                <M.div variants={fadeUp} className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+                <M.div variants={fadeUp} className="bg-white border border-line rounded-2xl p-6 shadow-sm">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="h-8 w-8 text-pink-500" />
                   </div>
@@ -83,19 +96,19 @@ export default function ReturnsPage() {
         </section>
 
         {/* How to Return */}
-        <section className="py-16 sm:py-24 bg-gray-50">
+        <section className="py-12 sm:py-16 bg-gray-50">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid lg:grid-cols-2 gap-12">
               <M.div
                 initial="hidden"
-                whileInView="visible"
+                whileInView="show"
                 viewport={{ once: true }}
                 variants={stagger(0.1)}
               >
-                <M.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-ink mb-6">
+                <M.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-ink mb-4">
                   How to Return an Item
                 </M.h2>
-                <M.p variants={fadeUp} className="text-lg text-muted mb-8">
+                <M.p variants={fadeUp} className="text-base sm:text-lg text-muted mb-6">
                   Returning an item is simple and straightforward. Follow these easy steps 
                   to process your return.
                 </M.p>
@@ -143,7 +156,7 @@ export default function ReturnsPage() {
                 </div>
               </M.div>
               
-              <M.div variants={fadeUp} className="bg-white rounded-2xl p-8 shadow-lg">
+              <M.div variants={fadeUp} className="bg-white rounded-2xl p-6 shadow-lg">
                 <h3 className="text-xl font-semibold text-ink mb-6">Return Requirements</h3>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
@@ -176,15 +189,15 @@ export default function ReturnsPage() {
           </div>
         </section>
 
-        {/* Exchange Process */}
-        <section className="py-16 sm:py-24 bg-white">
+        {/* Exchange Process + Contact Card */}
+        <section className="py-12 sm:py-16 bg-white">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <M.div
               initial="hidden"
-              whileInView="visible"
+              whileInView="show"
               viewport={{ once: true }}
               variants={stagger(0.1)}
-              className="text-center max-w-4xl mx-auto"
+              className="text-center max-w-5xl mx-auto"
             >
               <M.h2 variants={fadeUp} className="text-3xl sm:text-4xl font-bold text-ink mb-6">
                 Need to Exchange?
@@ -222,6 +235,15 @@ export default function ReturnsPage() {
                   </ul>
                 </M.div>
               </div>
+
+              {/* Contact Card */}
+              <M.div variants={fadeUp} className="mt-10 glaze-card bg-white/80 p-6 sm:p-8">
+                <p className="text-muted mb-4">Start your return or exchange</p>
+                <a href="mailto:returns@glazed.com?subject=Return%20or%20Exchange%20Request" className="inline-flex items-center justify-center rounded-full px-6 py-3 bg-pink-500 text-white font-semibold hover:bg-pink-600 transition-colors">
+                  Email returns@glazed.com
+                </a>
+                <p className="text-xs text-muted mt-3">Include your order number and reason so we can help faster.</p>
+              </M.div>
             </M.div>
           </div>
         </section>

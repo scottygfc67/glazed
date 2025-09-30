@@ -116,7 +116,7 @@ export default function CartPage() {
                           <div className="flex items-center gap-2">
                             {item.quantity >= 2 && (
                               <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                2 for £29.99
+                                2 for £32.99
                               </span>
                             )}
                             <p className="text-pink-500 font-semibold">
@@ -124,7 +124,7 @@ export default function CartPage() {
                                 if (item.quantity >= 2) {
                                   const pairs = Math.floor(item.quantity / 2);
                                   const remaining = item.quantity % 2;
-                                  return (pairs * 29.99 + remaining * item.price).toFixed(2);
+                                  return (pairs * 32.99 + remaining * item.price).toFixed(2);
                                 }
                                 return (item.price * item.quantity).toFixed(2);
                               })()}
@@ -169,7 +169,7 @@ export default function CartPage() {
                     {getSavings() > 0 && (
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                         <div className="flex justify-between items-center">
-                          <span className="text-green-800 text-sm font-medium">2 for £29.99 Applied!</span>
+                          <span className="text-green-800 text-sm font-medium">2 for £32.99 Applied!</span>
                           <span className="text-green-600 font-semibold">-£{getSavings().toFixed(2)}</span>
                         </div>
                       </div>
