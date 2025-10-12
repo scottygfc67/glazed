@@ -1,6 +1,49 @@
+'use client'
+
 import Image from 'next/image'
+import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Footer() {
+  const [email, setEmail] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [message, setMessage] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!email) {
+      setMessage('Please enter your email address')
+      return
+    }
+
+    setIsSubmitting(true)
+    setMessage('')
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setMessage('Success! Check your email for confirmation.')
+        setEmail('')
+      } else {
+        setMessage(data.message || 'Something went wrong. Please try again.')
+      }
+    } catch {
+      setMessage('Something went wrong. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <footer className="mt-24 border-t border-line bg-white">
       <div className="container py-14 grid gap-10 md:grid-cols-4">
@@ -85,23 +128,41 @@ export default function Footer() {
               </a>
             </li>
             <li>
+              <Link href="/blog" className="hover:text-brand-600 transition-colors">
+                Blog
+              </Link>
+            </li>
+            <li>
               <a href="/privacy" className="hover:text-brand-600 transition-colors">
                 Privacy Policy
               </a>
             </li>
           </ul>
         </div>
-        <form className="glaze-card p-4">
+        <form onSubmit={handleSubmit} className="glaze-card p-4">
           <p className="font-medium text-ink">Ready for 15% off?</p>
           <div className="mt-3 flex gap-2">
             <input 
+              type="email"
               placeholder="Email" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="flex-1 rounded-lg border border-line px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
+              required
             />
-            <button className="rounded-lg bg-pink-500 text-white px-4 py-2 text-sm font-medium hover:bg-pink-600 transition-colors">
-              Sign up
+            <button 
+              type="submit"
+              disabled={isSubmitting}
+              className="rounded-lg bg-pink-500 text-white px-4 py-2 text-sm font-medium hover:bg-pink-600 transition-colors disabled:opacity-50"
+            >
+              {isSubmitting ? '...' : 'Sign up'}
             </button>
           </div>
+          {message && (
+            <p className={`mt-2 text-xs ${message.includes('Success') ? 'text-green-600' : 'text-red-600'}`}>
+              {message}
+            </p>
+          )}
           <p className="mt-2 text-xs text-muted">No spam. Unsubscribe anytime.</p>
         </form>
       </div>

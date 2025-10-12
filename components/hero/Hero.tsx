@@ -41,7 +41,7 @@ export default function Hero() {
             <M.p variants={fadeUp} className="text-lg md:text-xl text-gray-100 mb-8 max-w-2xl mx-auto drop-shadow-md">
               A glossy pre-wash drizzle that melts knots, boosts shine, and revives dull hair — fast. Get healthy, touchable hair from the very first use.
             </M.p>
-            <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <M.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
               <a 
                 href="/product" 
                 className="inline-flex items-center justify-center rounded-xl bg-brand-500 text-white px-8 py-4 shadow-soft hover:bg-brand-600 transition-colors font-medium text-lg"
@@ -49,7 +49,7 @@ export default function Hero() {
                 Shop now
               </a>
               <a 
-                href="#learn" 
+                href="#benefits" 
                 className="inline-flex items-center justify-center rounded-xl bg-pink-500 text-white px-8 py-4 shadow-soft hover:bg-pink-600 transition-colors font-medium text-lg"
               >
                 Learn more

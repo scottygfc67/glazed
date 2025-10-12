@@ -15,11 +15,21 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Marquee />
-        <ProductSpotlight />
-        <SimpleBenefits />
-        <Banner />
-        <HowTo />
+        <div className="py-8">
+          <Marquee />
+        </div>
+        <div className="py-8">
+          <ProductSpotlight />
+        </div>
+        <div className="py-8">
+          <SimpleBenefits />
+        </div>
+        <div className="py-8">
+          <Banner />
+        </div>
+        <div className="py-8">
+          <HowTo />
+        </div>
       </main>
       <Footer />
     </>

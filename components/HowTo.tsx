@@ -93,8 +93,7 @@ export default function HowTo(){
           Works with all hair types, protective styles & color-treated hair
         </p>
         <a 
-          href="#bundle" 
-          data-cta="howto_duo_anchor" 
+          href="/product" 
           className="inline-flex items-center rounded-full px-8 py-4 text-white font-semibold text-lg shadow-lg hover:opacity-90 transition-opacity" 
           style={{ background: PINK }}
         >

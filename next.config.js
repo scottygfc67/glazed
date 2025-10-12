@@ -18,8 +18,8 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
-  // Disable static exports for development
-  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+  // Static exports disabled to support dynamic routes
+  // output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
 };
 
 module.exports = nextConfig;

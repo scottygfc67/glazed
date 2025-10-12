@@ -56,8 +56,7 @@ export default function Banner() {
           </div>
 
           <a 
-            href="#bundle" 
-            data-cta="banner_buy_now"
+            href="/product" 
             className="inline-flex items-center rounded-full px-8 py-4 bg-white text-pink-600 font-semibold text-lg shadow-lg hover:opacity-90 transition-opacity"
           >
             Buy Now · £32.99
