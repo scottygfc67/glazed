@@ -81,6 +81,29 @@ body {
   @apply font-[var(--font-display)] text-3xl md:text-5xl tracking-tight;
 }
 
+/* Blog content spacing */
+.prose p {
+  margin-bottom: 1.5rem !important;
+}
+
+.prose h2 {
+  margin-top: 2rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.prose h3 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.prose ul {
+  margin-bottom: 1.5rem !important;
+}
+
+.prose li {
+  margin-bottom: 0.5rem !important;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {

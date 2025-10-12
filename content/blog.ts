@@ -80,17 +80,80 @@ export const blogPosts: BlogPost[] = [
     slug: "how-often-to-use-pre-wash",
     title: "How Often Should You Use a Pre-Wash Oil?",
     excerpt:
-      "Most see best results using it every wash—adjust based on dryness and routine.",
+      "Discover the optimal frequency for using pre-wash oils based on your hair type, washing routine, and lifestyle. Get expert tips for maximum benefits.",
     date: "2025-09-28",
-    tags: ["frequency", "routine", "damage prevention"],
+    tags: ["frequency", "routine", "damage prevention", "hair care tips"],
     content: `
-      <p>If you wash daily, use lighter amounts. If you wash weekly, use a bit more to protect hair during the full cleanse.</p>
-      <h2>Suggested Frequency</h2>
+      <p>If you've discovered the magic of pre-wash oils, you're probably wondering: <em>How often should I actually use this stuff?</em> The answer isn't one-size-fits-all, but we're here to break it down so you can create the perfect routine for your hair.</p>
+
+      <p>Pre-wash oils work by creating a protective barrier around your hair before you shampoo, preventing damage and moisture loss during the washing process. But like any good thing, there's a sweet spot for frequency that depends on your hair type, lifestyle, and washing habits.</p>
+
+      <h2>The Simple Answer: Every Wash</h2>
+      
+      <p>For most people, using a pre-wash oil every time you shampoo is the gold standard. Think of it like sunscreen for your hair—you wouldn't skip it just because you used it yesterday, right?</p>
+
+      <p>Here's why consistency matters: Your hair is most vulnerable when it's wet and being manipulated. That's exactly when pre-wash oils shine, creating a protective layer that prevents breakage and maintains your hair's natural moisture.</p>
+
+      <h2>How Much Should You Use?</h2>
+      
+      <p>The amount depends on your hair type and length. Here's a quick guide:</p>
+
+      <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 30px 0;">
+        <h3 style="margin-top: 0; color: #333;">Quick Reference Guide</h3>
+        <p><strong>Fine/Straight Hair:</strong> 1-2 pumps, focus on ends only</p>
+        <p><strong>Wavy Hair:</strong> 2-3 pumps, mid-lengths to ends</p>
+        <p><strong>Curly Hair:</strong> 3-4 pumps, extra attention to ends</p>
+        <p><strong>Coily Hair:</strong> 4-5 pumps, generous application</p>
+      </div>
+
+      <h2>Adjusting for Your Washing Schedule</h2>
+
+      <h3>If You Wash Daily</h3>
+      <p>You can still use pre-wash oil every wash, but stick to lighter amounts. Your hair gets regular protection, so you don't need to go heavy on the product.</p>
+
+      <h3>If You Wash Every Other Day</h3>
+      <p>This is actually the sweet spot for most people. You get the benefits of regular protection without overdoing it, and your hair has time to breathe between treatments.</p>
+
+      <h3>If You Wash Weekly</h3>
+      <p>Use a bit more product to ensure your hair stays protected throughout the week. The extra oil will help maintain moisture between washes and prevent your hair from becoming too dry.</p>
+
+      <h2>Special Situations</h2>
+
+      <p><strong>Damaged or color-treated hair?</strong> Use it every wash with slightly more product. Your hair needs all the help it can get.</p>
+
+      <p><strong>Oily scalp?</strong> Still use pre-wash oil, but focus only on mid-lengths to ends. Avoid the scalp area to prevent excess oiliness.</p>
+
+      <p><strong>Dry scalp?</strong> You can apply a small amount to the scalp too, but keep the focus on your hair shaft for best results.</p>
+
+      <h2>How to Know If You're Doing It Right</h2>
+
+      <p><strong>You're using too much if:</strong></p>
       <ul>
-        <li>Fine/straight: every wash, very light</li>
-        <li>Wavy/curly: every wash, moderate</li>
-        <li>Coily: every wash, generous ends focus</li>
+        <li>Your hair feels heavy or greasy after washing</li>
+        <li>Other products don't seem to work as well</li>
+        <li>Your hair looks limp or lacks volume</li>
       </ul>
+
+      <p><strong>You're not using enough if:</strong></p>
+      <ul>
+        <li>Your hair feels rough or tangled after washing</li>
+        <li>You notice more breakage during styling</li>
+        <li>Your hair looks dull or lacks shine</li>
+      </ul>
+
+      <h2>Pro Tips for Best Results</h2>
+
+      <p><strong>Timing is everything:</strong> Apply your pre-wash oil 5-20 minutes before shampooing. This gives it time to penetrate and create that protective barrier.</p>
+
+      <p><strong>Start with dry hair:</strong> Work the oil through from mid-lengths to ends using your fingers or a wide-tooth comb for even distribution.</p>
+
+      <p><strong>Rinse well:</strong> Always rinse thoroughly before shampooing to ensure your shampoo can effectively clean your hair and scalp.</p>
+
+      <h2>The Bottom Line</h2>
+
+      <p>Start with every wash and adjust based on how your hair responds. Most people see healthier, shinier, more manageable hair within 2-4 weeks of consistent use.</p>
+
+      <p>Remember: The goal is to protect your hair during its most vulnerable moment. A little pre-wash oil goes a long way in preventing damage and maintaining your hair's health and beauty. Your future self will thank you!</p>
     `,
   },
 ];

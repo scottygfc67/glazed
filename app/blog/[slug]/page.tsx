@@ -51,7 +51,14 @@ export default function BlogArticlePage({ params }: Params) {
               )}
 
               {/* eslint-disable-next-line react/no-danger */}
-              <div className="prose prose-ink max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div 
+                className="prose prose-ink max-w-none" 
+                style={{
+                  lineHeight: '1.7',
+                  fontSize: '16px'
+                }}
+                dangerouslySetInnerHTML={{ __html: post.content }} 
+              />
             </div>
           </div>
         </section>
