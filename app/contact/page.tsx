@@ -162,7 +162,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-ink mb-1">Email</h3>
-                      <p className="text-muted">hello@glazed.com</p>
+                      <p className="text-muted">hello@stayglazed.shop</p>
                       <p className="text-sm text-muted">We'll respond within 24 hours</p>
                     </div>
                   </div>
