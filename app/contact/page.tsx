@@ -185,7 +185,7 @@ export default function ContactPage() {
                     <div>
                       <h3 className="font-semibold text-ink mb-1">Address</h3>
                       <p className="text-muted">
-                        123 Hair Street<br />
+                        12A Willow Court<br />
                         London, UK SW1A 1AA
                       </p>
                     </div>
