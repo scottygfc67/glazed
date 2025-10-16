@@ -279,7 +279,7 @@ export default function IngredientsPage() {
                     variant="outline"
                     className="bg-white/10 backdrop-blur border-white/30 text-white hover:bg-white/20"
                   >
-                    <Link href="/guarantee" className="flex items-center gap-2">
+                    <Link href="/money-back-guarantee" className="flex items-center gap-2">
                       <ShieldCheck className="h-5 w-5" /> Read the Guarantee
                     </Link>
                   </Button>
